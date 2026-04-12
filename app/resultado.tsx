@@ -18,6 +18,8 @@ import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { useLaudos } from '@/hooks/useLaudos';
 import { useLaudadorStore } from '@/stores/laudadorStore';
 import { Analytics } from '@/utils/analytics';
+import { useTextCase } from '@/hooks/useTextCase';
+import { applyTextCase } from '@/utils/textCase';
 
 type Aba = 'extenso' | 'objetivo';
 
@@ -32,8 +34,10 @@ export default function ResultadoScreen() {
   const { salvarLaudo } = useLaudos();
   const { achadosSelecionados, observacoes, limitacoesSelecionadas, resetar } =
     useLaudadorStore();
+  const { mode: textCaseMode } = useTextCase();
 
-  const texto = aba === 'extenso' ? (params.extenso ?? '') : (params.objetivo ?? '');
+  const textoRaw = aba === 'extenso' ? (params.extenso ?? '') : (params.objetivo ?? '');
+  const texto = applyTextCase(textoRaw, textCaseMode);
 
   const copiar = async () => {
     await Clipboard.setStringAsync(texto);

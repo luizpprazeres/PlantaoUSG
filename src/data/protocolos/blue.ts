@@ -80,7 +80,7 @@ const ZONAS = [
 
 export const BLUE: Protocolo = {
   id: 'blue',
-  nome: 'BLUE',
+  nome: 'Protocolo BLUE',
   nomeCompleto: 'POCUS Pulmonar (BLUE de Lichtenstein + avaliação estendida 12 campos)',
   indicacao: 'Dispneia aguda, IRpA, monitoramento de síndrome intersticial, pneumotórax/derrame',
   icone: 'Wind',

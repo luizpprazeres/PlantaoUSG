@@ -71,7 +71,7 @@ const styles = StyleSheet.create({
   categoria: {
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: 9,
-    color: '#2E2E2E',
+    color: Colors.textMuted,
     letterSpacing: 3,
     marginBottom: 8,
   },
@@ -90,7 +90,7 @@ const styles = StyleSheet.create({
   indicacao: {
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: 10,
-    color: '#3A3A3A',
+    color: Colors.textPrimary,
     lineHeight: 16,
   },
 });

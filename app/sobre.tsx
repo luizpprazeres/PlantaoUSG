@@ -4,6 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { FunilFooter } from '@/components/ui/FunilFooter';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
+import { useTextCase } from '@/hooks/useTextCase';
 
 const REFERENCIAS = [
   'Volpicelli G. et al. International evidence-based recommendations for point-of-care lung ultrasound. Intensive Care Medicine. 2012',
@@ -14,6 +15,8 @@ const REFERENCIAS = [
 ];
 
 export default function SobreScreen() {
+  const { mode, toggle } = useTextCase();
+
   return (
     <SafeAreaView style={styles.safe}>
       <View style={styles.header}>
@@ -27,6 +30,12 @@ export default function SobreScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.nome}>Plantão USG</Text>
         <Text style={styles.tagline}>Seu parceiro de ultrassom no plantão.</Text>
+
+        <Text style={styles.sectionLabel}>PREFERÊNCIAS</Text>
+        <TouchableOpacity onPress={toggle} style={styles.prefRow}>
+          <Text style={styles.prefLabel}>Formato do laudo</Text>
+          <Text style={styles.prefValue}>{mode === 'normal' ? 'Aa' : 'AA'}</Text>
+        </TouchableOpacity>
 
         <Text style={styles.sectionLabel}>CRIADOR</Text>
         <Text style={styles.body}>
@@ -118,5 +127,24 @@ const styles = StyleSheet.create({
     color: Colors.textSecondary,
     lineHeight: FontSize.caption * 1.8,
     marginBottom: Spacing.xs,
+  },
+  prefRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: Spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: Colors.borderSubtle,
+  },
+  prefLabel: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: FontSize.body,
+    color: Colors.textSecondary,
+  },
+  prefValue: {
+    fontFamily: 'IBMPlexMono_700Bold',
+    fontSize: FontSize.body,
+    color: Colors.textPrimary,
+    letterSpacing: 1,
   },
 });

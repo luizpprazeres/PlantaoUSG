@@ -19,10 +19,10 @@ import { useLaudadorStore } from '@/stores/laudadorStore';
 const DISPONIVEIS = ['efast', 'blue'];
 
 const PLACEHOLDER_PROTOCOLOS = [
-  { id: 'cardiaco', nome: 'Echo', indicacao: 'Função ventricular, câmaras, pericárdio', categoria: 'CARDÍACO' },
-  { id: 'abdominal', nome: 'Abdominal', indicacao: 'Aorta, bexiga, vias biliares, rins', categoria: 'ABDOMINAL' },
-  { id: 'aaa', nome: 'AAA', indicacao: 'Aneurisma de aorta abdominal', categoria: 'VASCULAR' },
-  { id: 'vascular', nome: 'Vascular', indicacao: 'VJI, subclávia, femoral, PAI', categoria: 'ACESSO' },
+  { id: 'cardiaco', nome: 'Cardíaco', indicacao: 'Função ventricular, câmaras, pericárdio', categoria: 'CARDÍACO' },
+  { id: 'rush', nome: 'Protocolo RUSH', indicacao: 'Choque indiferenciado — avaliação integrada cardíaca, pulmonar e vascular', categoria: 'CHOQUE' },
+  { id: 'vascular2', nome: 'Vascular', indicacao: 'Aorta abdominal, veia cava, vasos periféricos', categoria: 'VASCULAR' },
+  { id: 'acessos', nome: 'Acessos guiados', indicacao: 'VJI, subclávia, femoral, artéria radial', categoria: 'ACESSO' },
 ];
 
 const TODOS = [...PROTOCOLOS, ...PLACEHOLDER_PROTOCOLOS];
@@ -124,7 +124,7 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        <FunilFooter posicao="home" copy="by Laudo USG →" />
+        <FunilFooter posicao="home" copy="Parceria LaudoUSG →" />
       </ScrollView>
     </SafeAreaView>
   );
@@ -164,7 +164,7 @@ const styles = StyleSheet.create({
   navLink: {
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: 9,
-    color: '#222222',
+    color: Colors.textPrimary,
     letterSpacing: 1.5,
   },
   separator: {
