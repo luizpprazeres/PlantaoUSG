@@ -19,6 +19,9 @@
         { "microphonePermission": "Plantão USG usa o microfone para transcrição de voz nos laudos." }
       ]
     ],
-    "experiments": { "typedRoutes": true }
+    "experiments": { "typedRoutes": true },
+    "extra": {
+      "apiUrl": "https://plantao-usg.vercel.app"
+    }
   }
 }
