@@ -2,6 +2,13 @@ import { useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withDelay,
+  withTiming,
+  Easing,
+} from 'react-native-reanimated';
 import { ProtocoloCard } from '@/components/home/ProtocoloCard';
 import { FunilFooter } from '@/components/ui/FunilFooter';
 import { PROTOCOLOS } from '@/data/protocolos';
@@ -12,13 +19,52 @@ import { useLaudadorStore } from '@/stores/laudadorStore';
 const DISPONIVEIS = ['efast', 'blue'];
 
 const PLACEHOLDER_PROTOCOLOS = [
-  { id: 'cardiaco', nome: 'Cardíaco', indicacao: 'Função ventricular, câmaras, pericárdio' },
-  { id: 'abdominal', nome: 'Abdominal', indicacao: 'Aorta, bexiga, vias biliares, rins' },
-  { id: 'aaa', nome: 'AAA', indicacao: 'Aneurisma de aorta abdominal' },
-  { id: 'vascular', nome: 'Vascular', indicacao: 'VJI, subclávia, femoral, PAI' },
+  { id: 'cardiaco', nome: 'Echo', indicacao: 'Função ventricular, câmaras, pericárdio', categoria: 'CARDÍACO' },
+  { id: 'abdominal', nome: 'Abdominal', indicacao: 'Aorta, bexiga, vias biliares, rins', categoria: 'ABDOMINAL' },
+  { id: 'aaa', nome: 'AAA', indicacao: 'Aneurisma de aorta abdominal', categoria: 'VASCULAR' },
+  { id: 'vascular', nome: 'Vascular', indicacao: 'VJI, subclávia, femoral, PAI', categoria: 'ACESSO' },
 ];
 
 const TODOS = [...PROTOCOLOS, ...PLACEHOLDER_PROTOCOLOS];
+
+function AnimatedCard({
+  item,
+  index,
+  onPress,
+}: {
+  item: typeof TODOS[number];
+  index: number;
+  onPress: () => void;
+}) {
+  const opacity = useSharedValue(0);
+  const translateY = useSharedValue(12);
+
+  useEffect(() => {
+    opacity.value = withDelay(
+      index * 80,
+      withTiming(1, { duration: 300, easing: Easing.out(Easing.cubic) })
+    );
+    translateY.value = withDelay(
+      index * 80,
+      withTiming(0, { duration: 300, easing: Easing.out(Easing.cubic) })
+    );
+  }, []);
+
+  const animatedStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateY: translateY.value }],
+  }));
+
+  return (
+    <Animated.View style={[{ flex: 1 }, animatedStyle]}>
+      <ProtocoloCard
+        protocolo={item}
+        disponivel={DISPONIVEIS.includes(item.id)}
+        onPress={onPress}
+      />
+    </Animated.View>
+  );
+}
 
 export default function HomeScreen() {
   const iniciar = useLaudadorStore((s) => s.iniciar);
@@ -35,36 +81,48 @@ export default function HomeScreen() {
   return (
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.scroll}>
+
+        {/* Header centralizado */}
         <View style={styles.header}>
           <Text style={styles.title}>Plantão USG</Text>
-          <Text style={styles.subtitle}>POCUS à beira-leito</Text>
-          <View style={styles.headerActions}>
-            <TouchableOpacity onPress={() => router.push('/historico')}>
-              <Text style={styles.headerLink}>Histórico</Text>
-            </TouchableOpacity>
-            <TouchableOpacity onPress={() => router.push('/sobre')}>
-              <Text style={styles.headerLink}>Sobre</Text>
-            </TouchableOpacity>
-          </View>
+          <Text style={styles.subtitle}>ULTRASSONOGRAFIA À BEIRA-LEITO</Text>
         </View>
 
-        {pares.map((par, i) => (
-          <View key={i} style={styles.row}>
-            {par.map((p) => (
-              <ProtocoloCard
-                key={p.id}
-                protocolo={p}
-                disponivel={DISPONIVEIS.includes(p.id)}
-                onPress={() => {
-                  iniciar(p.id);
-                  Analytics.protocolSelected(p.id);
-                  router.push(`/laudador/${p.id}`);
-                }}
-              />
-            ))}
-            {par.length === 1 && <View style={{ flex: 1, margin: Spacing.xs }} />}
-          </View>
-        ))}
+        {/* Nav links */}
+        <View style={styles.nav}>
+          <TouchableOpacity onPress={() => router.push('/historico')}>
+            <Text style={styles.navLink}>HISTÓRICO</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/sobre')}>
+            <Text style={styles.navLink}>SOBRE</Text>
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.separator} />
+
+        {/* Grid de cards com stagger */}
+        <View style={styles.grid}>
+          {pares.map((par, rowIndex) => (
+            <View key={rowIndex} style={styles.row}>
+              {par.map((p, colIndex) => {
+                const cardIndex = rowIndex * 2 + colIndex;
+                return (
+                  <AnimatedCard
+                    key={p.id}
+                    item={p}
+                    index={cardIndex}
+                    onPress={() => {
+                      iniciar(p.id);
+                      Analytics.protocolSelected(p.id);
+                      router.push(`/laudador/${p.id}`);
+                    }}
+                  />
+                );
+              })}
+              {par.length === 1 && <View style={{ flex: 1, margin: Spacing.xs }} />}
+            </View>
+          ))}
+        </View>
 
         <FunilFooter posicao="home" copy="by Laudo USG →" />
       </ScrollView>
@@ -74,29 +132,48 @@ export default function HomeScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: Colors.bgPrimary },
-  scroll: { paddingHorizontal: Spacing.base, paddingBottom: Spacing.xl },
-  header: { paddingTop: Spacing.lg, paddingBottom: Spacing.xl },
+  scroll: { paddingBottom: Spacing.xl },
+  header: {
+    paddingTop: Spacing.lg,
+    paddingBottom: Spacing.md,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#0F0F0F',
+  },
   title: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.display,
+    fontSize: FontSize.heading,
     color: Colors.textPrimary,
-    letterSpacing: 0.02 * 28,
+    letterSpacing: 1.5,
   },
   subtitle: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: FontSize.label,
-    color: Colors.textSecondary,
-    marginTop: Spacing.xs,
+    fontSize: 9,
+    color: '#2E2E2E',
+    letterSpacing: 2.5,
+    marginTop: 5,
   },
-  headerActions: {
+  nav: {
     flexDirection: 'row',
-    gap: Spacing.base,
-    marginTop: Spacing.md,
+    justifyContent: 'center',
+    gap: 24,
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#0F0F0F',
   },
-  headerLink: {
+  navLink: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: FontSize.caption,
-    color: Colors.textMuted,
+    fontSize: 9,
+    color: '#222222',
+    letterSpacing: 1.5,
+  },
+  separator: {
+    height: 1,
+    backgroundColor: '#0F0F0F',
+  },
+  grid: {
+    paddingHorizontal: Spacing.base,
+    paddingTop: Spacing.base,
   },
   row: { flexDirection: 'row' },
 });
