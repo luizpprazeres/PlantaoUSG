@@ -1,14 +1,19 @@
+import { Platform } from 'react-native';
 import * as SQLite from 'expo-sqlite';
 import { drizzle } from 'drizzle-orm/expo-sqlite';
 import * as schema from './schema';
 
-const expo = SQLite.openDatabaseSync('plantao-usg.db', {
-  enableChangeListener: true,
-});
+// SQLite só funciona em nativo (iOS/Android) — web usa stub
+const isNative = Platform.OS !== 'web';
 
-export const db = drizzle(expo, { schema });
+const expo = isNative
+  ? SQLite.openDatabaseSync('plantao-usg.db', { enableChangeListener: true })
+  : null;
+
+export const db = isNative ? drizzle(expo!, { schema }) : (null as any);
 
 export async function runMigrations() {
+  if (!isNative) return;
   await db.run(`
     CREATE TABLE IF NOT EXISTS laudos (
       id TEXT PRIMARY KEY,

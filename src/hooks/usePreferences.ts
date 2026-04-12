@@ -1,10 +1,14 @@
 import { useCallback } from 'react';
+import { Platform } from 'react-native';
 import { eq } from 'drizzle-orm';
 import { db } from '@/db';
 import { preferences } from '@/db/schema';
 
+const isNative = Platform.OS !== 'web';
+
 export function usePreferences() {
   const get = useCallback(async (key: string): Promise<string | null> => {
+    if (!isNative) return null;
     const result = await db
       .select()
       .from(preferences)
@@ -14,6 +18,7 @@ export function usePreferences() {
   }, []);
 
   const set = useCallback(async (key: string, value: string) => {
+    if (!isNative) return;
     await db
       .insert(preferences)
       .values({ key, value })

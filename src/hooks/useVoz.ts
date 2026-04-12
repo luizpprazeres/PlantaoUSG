@@ -1,8 +1,29 @@
 import { useState, useCallback } from 'react';
-import {
-  ExpoSpeechRecognitionModule,
-  useSpeechRecognitionEvent,
-} from 'expo-speech-recognition';
+import { Platform } from 'react-native';
+import Constants from 'expo-constants';
+
+// expo-speech-recognition só funciona em dev client / produção nativa
+// No Expo Go e web usa stubs que não crasham
+const isExpoGo = Constants.appOwnership === 'expo';
+const isWeb = Platform.OS === 'web';
+const canUseVoice = !isExpoGo && !isWeb;
+
+let ExpoSpeechRecognitionModule: any = {
+  stop: () => {},
+  start: () => {},
+  requestPermissionsAsync: async () => ({ granted: false }),
+};
+let useSpeechRecognitionEvent: (event: string, handler: (e: any) => void) => void = () => {};
+
+if (canUseVoice) {
+  try {
+    const sr = require('expo-speech-recognition');
+    ExpoSpeechRecognitionModule = sr.ExpoSpeechRecognitionModule;
+    useSpeechRecognitionEvent = sr.useSpeechRecognitionEvent;
+  } catch {
+    // módulo não disponível neste ambiente
+  }
+}
 
 export function useVoz(onResult: (text: string) => void) {
   const [listening, setListening] = useState(false);
