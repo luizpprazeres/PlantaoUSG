@@ -84,6 +84,7 @@ export const BLUE: Protocolo = {
   nomeCompleto: 'POCUS Pulmonar (BLUE de Lichtenstein + avaliação estendida 12 campos)',
   indicacao: 'Dispneia aguda, IRpA, monitoramento de síndrome intersticial, pneumotórax/derrame',
   icone: 'Wind',
+  categoria: 'PULMONAR',
   transdutor: 'Convexo (≥10cm) ou Linear alta frequência',
   janelas: ZONAS.map((zona) => ({
     id: zona.id,

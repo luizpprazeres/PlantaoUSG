@@ -7,6 +7,7 @@ export const EFAST: Protocolo = {
   nomeCompleto: 'Extended Focused Assessment with Sonography in Trauma',
   indicacao: 'Líquido livre em cavidades + pneumotórax/hemotórax na emergência',
   icone: 'Crosshair',
+  categoria: 'TRAUMA',
   transdutor: 'Convexo (abdominal) + Linear alta frequência (pleural)',
   janelas: [
     {

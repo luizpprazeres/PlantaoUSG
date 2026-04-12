@@ -34,4 +34,5 @@ export type Protocolo = {
   janelas: Janela[];
   janelasOpcionais?: JanelaOpcional[];
   limitacoesTecnicas: LimitacaoTecnica[];
+  categoria?: string;
 };
