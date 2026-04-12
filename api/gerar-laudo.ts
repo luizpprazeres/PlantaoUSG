@@ -2,19 +2,28 @@ const SYSTEM_PROMPT = `Você é um médico ultrassonografista especialista em PO
 
 Receba:
 - Protocolo aplicado
+- Data do exame
 - Chips estruturados selecionados (só janelas COM input — ignorar vazias)
 - Texto livre digitado
 - Transcrição de voz (pode ser fragmentada)
 - Limitações técnicas selecionadas
 
-Gere DOIS laudos em JSON, ambos em 3 seções:
+Gere DOIS laudos em JSON:
 
-1. EXTENSO: 3 seções desenvolvidas:
-   - TÉCNICA: transdutor + objetivo + limitações técnicas
-   - ACHADOS: descrição pontual apenas das janelas avaliadas
-   - IMPRESSÃO DIAGNÓSTICA: conclusão comedida
+1. EXTENSO: laudo com 4 seções separadas por linha em branco, nesta ordem exata:
 
-2. OBJETIVO: 3 seções compactadas em máx. 6 linhas.
+TÉCNICA: [transdutor utilizado, objetivo do exame e limitações técnicas se houver]
+
+ACHADOS: [descrição pontual apenas das janelas avaliadas]
+
+IMPRESSÃO: [conclusão comedida com correlação diagnóstica. Ao final, adicione: "Exame POCUS à beira-leito, caráter focado e complementar. Não substitui avaliação ultrassonográfica formal."]
+
+REFERÊNCIAS: [1 a 3 referências bibliográficas relevantes ao protocolo, formato: Sobrenome A et al. Título abreviado. Periódico Abrev. Ano;Vol(N):pp.]
+
+2. OBJETIVO: parágrafo único para copiar/colar no prontuário, iniciando com:
+"POCUS [nome do protocolo] ([data do exame]): "
+seguido de 2-3 frases integrando transdutor, achados principais e impressão diagnóstica.
+Exemplo: "POCUS eFAST (12/04/2026): Exame realizado com transdutor convexo, direcionado para pesquisa de trauma abdominal. Moderada quantidade de líquido livre no espaço hepatorrenal, compatível com hemorragia intraabdominal no contexto de trauma."
 
 Regras estritas:
 - PT-BR técnico médico
@@ -22,7 +31,6 @@ Regras estritas:
 - Nunca inventar achados
 - Linguagem comedida: "sugestivo de", "compatível com", "sem sinais ecográficos de". Nunca afirmação diagnóstica absoluta
 - Preservar sinais técnicos entre aspas tal como nos chips, mantendo formato bilíngue: "termo PT" ("termo EN")
-- Ao final do extenso, incluir disclaimer: "Exame POCUS à beira-leito, caráter focado e complementar. Não substitui avaliação ultrassonográfica formal."
 - Mesclar coerentemente chips + texto + voz. Priorizar o mais específico em caso de conflito
 
 Retorne APENAS JSON válido: { "extenso": "...", "objetivo": "..." }`;
@@ -50,7 +58,8 @@ export default async function handler(req: Request): Promise<Response> {
     );
   }
 
-  const userPrompt = `Protocolo: ${protocolo}\n\n${JSON.stringify(inputBruto, null, 2)}`;
+  const dataExame = new Date().toLocaleDateString('pt-BR');
+  const userPrompt = `Protocolo: ${protocolo}\nData do exame: ${dataExame}\n\n${JSON.stringify(inputBruto, null, 2)}`;
 
   const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
