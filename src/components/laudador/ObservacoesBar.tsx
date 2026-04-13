@@ -29,7 +29,7 @@ export function ObservacoesBar({ value, onChange }: ObservacoesBarProps) {
           onChangeText={onChange}
           multiline
           numberOfLines={4}
-          placeholder="Texto livre ou transcrição de voz..."
+          placeholder="achados adicionais, técnica, limitações"
           placeholderTextColor={Colors.textMuted}
           autoFocus
         />

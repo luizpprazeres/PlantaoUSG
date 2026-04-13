@@ -85,7 +85,7 @@ export default function HomeScreen() {
         {/* Header centralizado */}
         <View style={styles.header}>
           <Text style={styles.title}>Plantão USG</Text>
-          <Text style={styles.subtitle}>ULTRASSONOGRAFIA À BEIRA-LEITO</Text>
+          <Text style={styles.subtitle}>POCUS · LAUDOS · EMERGÊNCIA</Text>
         </View>
 
         {/* Nav links */}

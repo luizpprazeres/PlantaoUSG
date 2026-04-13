@@ -121,7 +121,7 @@ export default function LaudadorScreen() {
         },
       });
     } catch (err) {
-      Alert.alert('Erro ao gerar laudo', (err as Error).message);
+      Alert.alert('Erro', (err as Error).message);
     } finally {
       setGerando(false);
     }

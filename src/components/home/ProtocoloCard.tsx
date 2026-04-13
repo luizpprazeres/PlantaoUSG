@@ -43,7 +43,7 @@ export function ProtocoloCard({ protocolo, disponivel, onPress }: ProtocoloCardP
         <Text style={styles.nome}>{protocolo.nome}</Text>
         <View style={styles.divisor} />
         <Text style={styles.indicacao} numberOfLines={2}>
-          {disponivel ? protocolo.indicacao : 'EM BREVE'}
+          {disponivel ? protocolo.indicacao : 'em desenvolvimento'}
         </Text>
       </Animated.View>
     </Pressable>
