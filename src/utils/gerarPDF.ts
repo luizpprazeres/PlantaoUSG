@@ -1,5 +1,4 @@
-import * as Print from 'expo-print';
-import * as Sharing from 'expo-sharing';
+import { Alert } from 'react-native';
 import type { MedicoInfo } from '@/hooks/useMedico';
 
 function formatarData(): { data: string; hora: string } {
@@ -178,16 +177,27 @@ export async function exportarPDF(
   protocolo: string,
   medico: MedicoInfo
 ): Promise<void> {
-  const html = gerarHTML(laudoExtenso, laudoObjetivo, protocolo, medico);
+  try {
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const Print = require('expo-print');
+    // eslint-disable-next-line @typescript-eslint/no-require-imports
+    const Sharing = require('expo-sharing');
 
-  const { uri } = await Print.printToFileAsync({ html, base64: false });
+    const html = gerarHTML(laudoExtenso, laudoObjetivo, protocolo, medico);
+    const { uri } = await Print.printToFileAsync({ html, base64: false });
 
-  const podeCompartilhar = await Sharing.isAvailableAsync();
-  if (podeCompartilhar) {
-    await Sharing.shareAsync(uri, {
-      mimeType: 'application/pdf',
-      dialogTitle: 'Exportar laudo POCUS',
-      UTI: 'com.adobe.pdf',
-    });
+    const podeCompartilhar = await Sharing.isAvailableAsync();
+    if (podeCompartilhar) {
+      await Sharing.shareAsync(uri, {
+        mimeType: 'application/pdf',
+        dialogTitle: 'Exportar laudo POCUS',
+        UTI: 'com.adobe.pdf',
+      });
+    }
+  } catch {
+    Alert.alert(
+      'PDF não disponível',
+      'Esta funcionalidade requer um build nativo do app. Disponível em breve na App Store.'
+    );
   }
 }
