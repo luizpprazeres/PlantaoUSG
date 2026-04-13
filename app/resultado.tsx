@@ -7,11 +7,12 @@ import {
   StyleSheet,
   Alert,
   Platform,
+  Share,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
-import { ArrowLeft, Copy } from 'lucide-react-native';
+import { ArrowLeft, Copy, Share2 } from 'lucide-react-native';
 import { TypewriterText } from '@/components/ui/TypewriterText';
 import { LaudoExtensoRenderer } from '@/components/resultado/LaudoExtensoRenderer';
 import { FunilFooter } from '@/components/ui/FunilFooter';
@@ -52,6 +53,14 @@ export default function ResultadoScreen() {
     }
   };
 
+  const compartilhar = async () => {
+    try {
+      await Share.share({ message: texto });
+    } catch {
+      // usuário cancelou ou erro — ignorar silenciosamente
+    }
+  };
+
   const salvar = async () => {
     if (saved) return;
     try {
@@ -85,9 +94,14 @@ export default function ResultadoScreen() {
           <ArrowLeft size={20} color={Colors.textPrimary} />
         </TouchableOpacity>
         <Text style={styles.titulo}>LAUDO</Text>
-        <TouchableOpacity onPress={copiar}>
-          <Copy size={20} color={Colors.textSecondary} />
-        </TouchableOpacity>
+        <View style={styles.headerActions}>
+          <TouchableOpacity onPress={copiar} style={styles.actionBtn}>
+            <Copy size={20} color={Colors.textSecondary} />
+          </TouchableOpacity>
+          <TouchableOpacity onPress={compartilhar} style={styles.actionBtn}>
+            <Share2 size={20} color={Colors.textSecondary} />
+          </TouchableOpacity>
+        </View>
       </View>
 
       <View style={styles.abas}>
@@ -129,6 +143,12 @@ const styles = StyleSheet.create({
     paddingVertical: Spacing.md,
   },
   back: {},
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.base,
+  },
+  actionBtn: {},
   titulo: {
     fontFamily: 'IBMPlexMono_700Bold',
     fontSize: FontSize.label,
