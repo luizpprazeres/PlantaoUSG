@@ -225,6 +225,71 @@ export const CALCULADORAS: Calculadora[] = [
       return faixas[v.faixa] ?? faixas[3];
     },
   },
+
+  // ── OBSTÉTRICO ────────────────────────────────────────────────────────────
+  {
+    id: 'ig_ccn',
+    nome: 'IG pelo CCN',
+    categoria: 'OBSTÉTRICO',
+    descricao: 'Idade gestacional pelo Comprimento Cabeça-Nádega (1º trimestre, 5–84mm)',
+    fonte: 'Hadlock FP et al. Am J Obstet Gynecol. 1992;167(4):903-908',
+    campos: [
+      { id: 'ccn', label: 'CCN — Comprimento Cabeça-Nádega', unit: 'mm', type: 'number', min: 5, max: 84, placeholder: 'ex: 25' },
+    ],
+    calcular: (v) => {
+      const igSemanas = v.ccn / 7 + 6;
+      const semanas = Math.floor(igSemanas);
+      const dias = Math.round((igSemanas - semanas) * 7);
+      const valor = `${semanas}s ${dias}d`;
+      return {
+        valor,
+        interpretacao: `${semanas} semanas e ${dias} dias de gestação (pelo CCN de ${v.ccn} mm)`,
+        cor: 'normal',
+      };
+    },
+  },
+  {
+    id: 'ig_dmsg',
+    nome: 'IG pelo DMSG',
+    categoria: 'OBSTÉTRICO',
+    descricao: 'Idade gestacional pelo Diâmetro Médio do Saco Gestacional (gestação muito precoce, 2–30mm)',
+    fonte: 'Robinson HP, Fleming JEE. BJOG. 1975;82(9):702-710',
+    campos: [
+      { id: 'dmsg', label: 'DMSG — Diâmetro Médio do Saco Gestacional', unit: 'mm', type: 'number', min: 2, max: 30, placeholder: 'ex: 12' },
+    ],
+    calcular: (v) => {
+      const igDias = v.dmsg + 30;
+      const semanas = Math.floor(igDias / 7);
+      const dias = igDias % 7;
+      const valor = `${semanas}s ${dias}d`;
+      return {
+        valor,
+        interpretacao: `${semanas} semanas e ${dias} dias de gestação (pelo DMSG de ${v.dmsg} mm) — válido antes da visualização do embrião`,
+        cor: 'normal',
+      };
+    },
+  },
+  {
+    id: 'ila',
+    nome: 'ILA — Índice de Líquido Amniótico',
+    categoria: 'OBSTÉTRICO',
+    descricao: 'Soma dos maiores bolsões nos 4 quadrantes uterinos (técnica de Phelan)',
+    fonte: 'Phelan JP et al. Am J Obstet Gynecol. 1987;157(3):762-764',
+    campos: [
+      { id: 'q1', label: 'Quadrante superior direito', unit: 'mm', type: 'number', min: 0, max: 200, placeholder: 'ex: 45' },
+      { id: 'q2', label: 'Quadrante superior esquerdo', unit: 'mm', type: 'number', min: 0, max: 200, placeholder: 'ex: 40' },
+      { id: 'q3', label: 'Quadrante inferior direito', unit: 'mm', type: 'number', min: 0, max: 200, placeholder: 'ex: 50' },
+      { id: 'q4', label: 'Quadrante inferior esquerdo', unit: 'mm', type: 'number', min: 0, max: 200, placeholder: 'ex: 35' },
+    ],
+    calcular: (v) => {
+      const ila = (v.q1 ?? 0) + (v.q2 ?? 0) + (v.q3 ?? 0) + (v.q4 ?? 0);
+      const valor = `${ila} mm`;
+      if (ila < 50) return { valor, interpretacao: 'Oligohidrâmnio grave — avaliação obstétrica urgente', cor: 'critico' };
+      if (ila < 80) return { valor, interpretacao: 'Oligohidrâmnio leve — monitorização fetal e avaliação obstétrica', cor: 'atencao' };
+      if (ila <= 200) return { valor, interpretacao: 'Volume amniótico normal', cor: 'normal' };
+      return { valor, interpretacao: 'Polidrâmnio — avaliar causa (diabetes, anomalias fetais)', cor: 'atencao' };
+    },
+  },
 ];
 
 export const CALCULADORA_MAP: Record<string, Calculadora> = Object.fromEntries(
