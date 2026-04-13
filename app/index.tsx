@@ -16,6 +16,7 @@ import { PROTOCOLOS } from '@/data/protocolos';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { Analytics } from '@/utils/analytics';
 import { useLaudadorStore } from '@/stores/laudadorStore';
+import { usePreferences } from '@/hooks/usePreferences';
 
 const DISPONIVEIS = ['efast', 'blue', 'rush', 'cardiac', 'vexus'];
 
@@ -67,9 +68,13 @@ function AnimatedCard({
 
 export default function HomeScreen() {
   const iniciar = useLaudadorStore((s) => s.iniciar);
+  const { get } = usePreferences();
 
   useEffect(() => {
     Analytics.appOpened();
+    get('onboarding_done').then((done) => {
+      if (!done) router.replace('/onboarding');
+    });
   }, []);
 
   const pares: typeof TODOS[number][][] = [];
