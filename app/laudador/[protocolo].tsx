@@ -1,13 +1,22 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
   ScrollView,
   TouchableOpacity,
+  Pressable,
   StyleSheet,
-  ActivityIndicator,
   Alert,
 } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withSpring,
+  withTiming,
+  withRepeat,
+  cancelAnimation,
+  Easing,
+} from 'react-native-reanimated';
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
@@ -25,6 +34,46 @@ import { useVoz } from '@/hooks/useVoz';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { Analytics } from '@/utils/analytics';
 import type { Janela } from '@/data/protocolos/tipos';
+
+function BotaoGerar({ onPress, isLoading }: { onPress: () => void; isLoading: boolean }) {
+  const scale = useSharedValue(1);
+  const pulseOpacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (isLoading) {
+      pulseOpacity.value = withRepeat(
+        withTiming(0.35, { duration: 700, easing: Easing.inOut(Easing.quad) }),
+        -1,
+        true
+      );
+    } else {
+      cancelAnimation(pulseOpacity);
+      pulseOpacity.value = withTiming(1, { duration: 150 });
+    }
+  }, [isLoading]);
+
+  const buttonStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: scale.value }],
+    opacity: pulseOpacity.value,
+  }));
+
+  return (
+    <Pressable
+      onPressIn={() => {
+        scale.value = withSpring(0.96, { damping: 22, stiffness: 380 });
+      }}
+      onPressOut={() => {
+        scale.value = withSpring(1, { damping: 20, stiffness: 350 });
+      }}
+      onPress={onPress}
+      disabled={isLoading}
+    >
+      <Animated.View style={[styles.gerarBtn, buttonStyle]}>
+        <Text style={styles.gerarText}>{isLoading ? 'GERANDO...' : 'GERAR'}</Text>
+      </Animated.View>
+    </Pressable>
+  );
+}
 
 export default function LaudadorScreen() {
   const { protocolo: protocoloId } = useLocalSearchParams<{ protocolo: string }>();
@@ -171,17 +220,7 @@ export default function LaudadorScreen() {
 
       <View style={[styles.bottomBar, { paddingBottom: insets.bottom + Spacing.md }]}>
         <VoiceButton listening={listening} onPress={toggleVoz} />
-        <TouchableOpacity
-          style={[styles.gerarBtn, gerando && styles.gerarBtnDisabled]}
-          onPress={handleGerar}
-          disabled={gerando}
-        >
-          {gerando ? (
-            <ActivityIndicator color={Colors.bgPrimary} size="small" />
-          ) : (
-            <Text style={styles.gerarText}>GERAR</Text>
-          )}
-        </TouchableOpacity>
+        <BotaoGerar onPress={handleGerar} isLoading={gerando} />
       </View>
 
       <JanelaSheet
@@ -231,7 +270,6 @@ const styles = StyleSheet.create({
     minWidth: 120,
     alignItems: 'center',
   },
-  gerarBtnDisabled: { opacity: 0.5 },
   gerarText: {
     fontFamily: 'IBMPlexMono_700Bold',
     fontSize: FontSize.label,
