@@ -17,6 +17,7 @@ import { tirarDuvida, type MensagemChat } from '@/services/llmClient';
 import { useVoz } from '@/hooks/useVoz';
 import { VoiceButton } from '@/components/ui/VoiceButton';
 import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
+import { MarkdownText } from '@/components/ui/MarkdownText';
 
 const SUGESTOES = [
   'Qual o TAPSE normal?',
@@ -119,6 +120,7 @@ export default function TiraDuvidasScreen() {
             mensagens.length === 0 && styles.scrollEmpty,
           ]}
           keyboardShouldPersistTaps="handled"
+          scrollEventThrottle={16}
         >
           {mensagens.length === 0 ? (
             <View style={styles.emptyState}>
@@ -148,14 +150,13 @@ export default function TiraDuvidasScreen() {
                   msg.role === 'user' ? styles.bubbleUser : styles.bubbleAssistant,
                 ]}
               >
-                <Text
-                  style={[
-                    styles.bubbleText,
-                    msg.role === 'user' ? styles.bubbleTextUser : styles.bubbleTextAssistant,
-                  ]}
-                >
+                {msg.role === 'user' ? (
+                <Text style={[styles.bubbleText, styles.bubbleTextUser]}>
                   {msg.content}
                 </Text>
+              ) : (
+                <MarkdownText text={msg.content} />
+              )}
               </View>
             ))
           )}
@@ -175,7 +176,7 @@ export default function TiraDuvidasScreen() {
             value={input}
             onChangeText={setInput}
             placeholder="Sua dúvida sobre POCUS..."
-            placeholderTextColor={Colors.textMuted}
+            placeholderTextColor="#999999"
             multiline
             maxLength={500}
             returnKeyType="default"
@@ -222,7 +223,6 @@ const styles = StyleSheet.create({
   scrollContent: {
     paddingHorizontal: Spacing.base,
     paddingVertical: Spacing.base,
-    gap: Spacing.sm,
   },
   scrollEmpty: {
     flex: 1,
@@ -267,6 +267,7 @@ const styles = StyleSheet.create({
     borderRadius: Radius.md,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
+    marginBottom: Spacing.sm,
   },
   bubbleUser: {
     alignSelf: 'flex-end',
@@ -307,8 +308,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: FontSize.caption,
-    color: Colors.textPrimary,
-    backgroundColor: Colors.bgInput,
+    color: '#000000',
+    backgroundColor: '#FFFFFF',
     borderRadius: Radius.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
