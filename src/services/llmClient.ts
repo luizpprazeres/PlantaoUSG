@@ -22,6 +22,29 @@ export interface LaudoGerado {
   objetivo: string;
 }
 
+export interface MensagemChat {
+  role: 'user' | 'assistant';
+  content: string;
+}
+
+export async function tirarDuvida(
+  mensagens: MensagemChat[]
+): Promise<string> {
+  const response = await fetch(`${API_URL}/api/tira-duvidas`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ mensagens }),
+  });
+
+  if (!response.ok) {
+    const err = await response.json().catch(() => ({ error: 'Erro desconhecido' }));
+    throw new Error((err as { error: string }).error ?? `Erro ${response.status}`);
+  }
+
+  const data = await response.json() as { resposta: string };
+  return data.resposta;
+}
+
 export async function gerarLaudo(
   inputBruto: InputBruto
 ): Promise<LaudoGerado> {
