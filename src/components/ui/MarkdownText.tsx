@@ -3,6 +3,7 @@ import { Colors, FontSize } from '@/constants/theme';
 
 interface MarkdownTextProps {
   text: string;
+  color?: string;
   style?: object;
 }
 
@@ -39,8 +40,7 @@ function parseInline(line: string, baseColor: string): React.ReactNode[] {
   return parts;
 }
 
-export function MarkdownText({ text, style }: MarkdownTextProps) {
-  const color = Colors.textSecondary;
+export function MarkdownText({ text, color = Colors.textSecondary, style }: MarkdownTextProps) {
   const lines = text.split('\n');
 
   return (

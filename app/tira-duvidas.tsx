@@ -155,7 +155,7 @@ export default function TiraDuvidasScreen() {
                   {msg.content}
                 </Text>
               ) : (
-                <MarkdownText text={msg.content} />
+                <MarkdownText text={msg.content} color="#1a1a1a" />
               )}
               </View>
             ))
@@ -275,9 +275,7 @@ const styles = StyleSheet.create({
   },
   bubbleAssistant: {
     alignSelf: 'flex-start',
-    backgroundColor: Colors.bgElevated,
-    borderWidth: 1,
-    borderColor: Colors.borderSubtle,
+    backgroundColor: '#FFFFFF',
   },
   bubbleLoading: {
     paddingVertical: Spacing.md,
@@ -308,8 +306,8 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: FontSize.caption,
-    color: '#000000',
-    backgroundColor: '#FFFFFF',
+    color: Colors.textPrimary,
+    backgroundColor: Colors.bgInput,
     borderRadius: Radius.sm,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
