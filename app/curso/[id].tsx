@@ -10,6 +10,8 @@ import { MODULO_MAP } from '@/data/curso';
 import type { Aula, QuestaoAula } from '@/data/curso';
 import { MarkdownText } from '@/components/ui/MarkdownText';
 import { HtmlRenderer } from '@/components/ui/HtmlRenderer';
+import { useCursoStore } from '@/stores/cursoStore';
+import type { FaseAula } from '@/stores/cursoStore';
 
 // ── PALETA (fundo branco) ──────────────────────────────────────────────────
 const C = {
@@ -27,8 +29,6 @@ const C = {
   accentText: '#FFFFFF',
   progress: '#1a1a1a',
 } as const;
-
-type FaseAula = 'conteudo' | 'quiz' | 'resultado';
 
 function QuizQuestao({
   questao,
@@ -102,14 +102,37 @@ function QuizQuestao({
 
 export default function CursoModuloScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
-  const modulo = MODULO_MAP[id ?? ''];
+  const moduloId = id ?? '';
+  const modulo = MODULO_MAP[moduloId];
+
+  // Store — hooks antes do early return
+  const { salvar, concluirAula, concluirModulo } = useCursoStore();
 
   const scrollRef = useRef<ScrollView>(null);
 
-  const [aulaIdx, setAulaIdx] = useState(0);
-  const [fase, setFase] = useState<FaseAula>('conteudo');
-  const [acertosTotal, setAcertosTotal] = useState(0);
-  const [questaoIdx, setQuestaoIdx] = useState(0);
+  // Restaura progresso do SQLite (storage síncrono — disponível no primeiro render)
+  const [aulaIdx, setAulaIdx] = useState(() => {
+    const saved = useCursoStore.getState().progresso[moduloId];
+    if (!saved || !modulo) return 0;
+    // Se estava no resultado, avança para a próxima aula
+    if (saved.fase === 'resultado') {
+      return Math.min(saved.aulaIdx + 1, modulo.aulas.length - 1);
+    }
+    return saved.aulaIdx;
+  });
+  const [fase, setFase] = useState<FaseAula>(() => {
+    const saved = useCursoStore.getState().progresso[moduloId];
+    if (!saved || saved.fase === 'resultado') return 'conteudo';
+    return saved.fase;
+  });
+  const [acertosTotal, setAcertosTotal] = useState(() =>
+    useCursoStore.getState().progresso[moduloId]?.acertosTotal ?? 0
+  );
+  const [questaoIdx, setQuestaoIdx] = useState(() => {
+    const saved = useCursoStore.getState().progresso[moduloId];
+    if (!saved || saved.fase === 'resultado') return 0;
+    return saved.questaoIdx;
+  });
   const [respostas, setRespostas] = useState<boolean[]>([]);
 
   if (!modulo) {
@@ -136,12 +159,19 @@ export default function CursoModuloScreen() {
 
   const scrollToTop = () => scrollRef.current?.scrollTo({ y: 0, animated: false });
 
-  const handleResponder = (correta: boolean) => {
-    const novasRespostas = [...respostas, correta];
-    setRespostas(novasRespostas);
-    if (correta) setAcertosTotal((a) => a + 1);
+  const iniciarQuiz = () => {
+    scrollToTop();
+    setFase('quiz');
+    setQuestaoIdx(0);
+    salvar(moduloId, { fase: 'quiz', questaoIdx: 0 });
+  };
 
-    // scroll para mostrar a explicação
+  const handleResponder = (correta: boolean) => {
+    const novoAcertosTotal = acertosTotal + (correta ? 1 : 0);
+    setRespostas((prev) => [...prev, correta]);
+    if (correta) setAcertosTotal(novoAcertosTotal);
+
+    // Scroll para mostrar a explicação
     setTimeout(() => {
       scrollRef.current?.scrollToEnd({ animated: true });
     }, 150);
@@ -151,9 +181,12 @@ export default function CursoModuloScreen() {
       if (proxima < aula.questoes.length) {
         setQuestaoIdx(proxima);
         scrollToTop();
+        salvar(moduloId, { questaoIdx: proxima, acertosTotal: novoAcertosTotal });
       } else {
         setFase('resultado');
         scrollToTop();
+        concluirAula(moduloId);
+        salvar(moduloId, { fase: 'resultado', acertosTotal: novoAcertosTotal });
       }
     }, 1400);
   };
@@ -161,16 +194,18 @@ export default function CursoModuloScreen() {
   const proximaAula = () => {
     scrollToTop();
     if (aulaIdx + 1 < totalAulas) {
-      setAulaIdx((i) => i + 1);
+      const novoAulaIdx = aulaIdx + 1;
+      setAulaIdx(novoAulaIdx);
       setFase('conteudo');
       setQuestaoIdx(0);
       setRespostas([]);
+      salvar(moduloId, { aulaIdx: novoAulaIdx, fase: 'conteudo', questaoIdx: 0 });
     } else {
-      const totalAcertos = acertosTotal;
+      concluirModulo(moduloId);
       const totalQuestoes = modulo.aulas.reduce((acc, a) => acc + a.questoes.length, 0);
       Alert.alert(
         '✓ Módulo concluído',
-        `${modulo.titulo}\n\n${totalAcertos}/${totalQuestoes} questões corretas\n+${totalAcertos * 10} pontos`,
+        `${modulo.titulo}\n\n${acertosTotal}/${totalQuestoes} questões corretas\n+${acertosTotal * 10} pontos`,
         [{ text: 'Voltar ao curso', onPress: () => router.back() }]
       );
     }
@@ -201,7 +236,7 @@ export default function CursoModuloScreen() {
 
       <ScrollView
         ref={scrollRef}
-        contentContainerStyle={s.scroll}
+        contentContainerStyle={[s.scroll, fase === 'conteudo' && s.scrollConteudo]}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
       >
@@ -224,11 +259,6 @@ export default function CursoModuloScreen() {
                 <HtmlRenderer html={aula.esquemaHtml} />
               </View>
             )}
-
-            <TouchableOpacity style={s.btnPrimario} onPress={() => { scrollToTop(); setFase('quiz'); }} activeOpacity={0.85}>
-              <Text style={s.btnPrimarioText}>INICIAR QUIZ</Text>
-              <ArrowRight size={16} color={C.accentText} />
-            </TouchableOpacity>
           </>
         )}
 
@@ -292,6 +322,16 @@ export default function CursoModuloScreen() {
         )}
 
       </ScrollView>
+
+      {/* Botão sticky — visível apenas na fase de conteúdo */}
+      {fase === 'conteudo' && (
+        <View style={s.stickyFooter}>
+          <TouchableOpacity style={s.btnPrimario} onPress={iniciarQuiz} activeOpacity={0.85}>
+            <Text style={s.btnPrimarioText}>INICIAR QUIZ</Text>
+            <ArrowRight size={16} color={C.accentText} />
+          </TouchableOpacity>
+        </View>
+      )}
     </SafeAreaView>
   );
 }
@@ -337,6 +377,20 @@ const s = StyleSheet.create({
   scroll: {
     padding: 20,
     paddingBottom: 48,
+  },
+  // Padding extra para o conteúdo não ficar atrás do botão sticky
+  scrollConteudo: {
+    paddingBottom: 96,
+  },
+
+  // Botão sticky — fase conteúdo
+  stickyFooter: {
+    backgroundColor: C.bg,
+    borderTopWidth: 1,
+    borderTopColor: C.border,
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 24,
   },
 
   // Conteúdo
@@ -492,7 +546,7 @@ const s = StyleSheet.create({
     marginTop: 4,
   },
 
-  // Botão primário
+  // Botão primário (quiz/resultado)
   btnPrimario: {
     flexDirection: 'row',
     alignItems: 'center',

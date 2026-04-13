@@ -5,6 +5,7 @@ import { ArrowLeft, Lock, CheckCircle, BookOpen } from 'lucide-react-native';
 import { MODULOS } from '@/data/curso';
 import type { Modulo, NivelCurso } from '@/data/curso';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
+import { useCursoStore } from '@/stores/cursoStore';
 
 const NIVEL_LABEL: Record<NivelCurso, string> = {
   iniciante: 'BÁSICO',
@@ -21,6 +22,12 @@ const NIVEL_COR: Record<NivelCurso, string> = {
 function ModuloCard({ modulo, disponivel }: { modulo: Modulo; disponivel: boolean }) {
   const totalAulas = modulo.aulas.length;
   const totalQuestoes = modulo.aulas.reduce((acc, a) => acc + a.questoes.length, 0);
+
+  const progresso = useCursoStore((s) => s.progresso[modulo.id]);
+  const aulasConcluidas = progresso?.aulasConcluidas ?? 0;
+  const concluido = progresso?.concluido ?? false;
+  const emAndamento = aulasConcluidas > 0 && !concluido;
+  const pct = totalAulas > 0 ? aulasConcluidas / totalAulas : 0;
 
   return (
     <TouchableOpacity
@@ -39,7 +46,9 @@ function ModuloCard({ modulo, disponivel }: { modulo: Modulo; disponivel: boolea
           </View>
           <Text style={styles.protocolo}>{modulo.protocolo.toUpperCase()}</Text>
         </View>
-        {disponivel ? (
+        {concluido ? (
+          <CheckCircle size={18} color="#4CAF50" />
+        ) : disponivel ? (
           <BookOpen size={18} color={Colors.textMuted} />
         ) : (
           <Lock size={18} color={Colors.textMuted} />
@@ -58,9 +67,22 @@ function ModuloCard({ modulo, disponivel }: { modulo: Modulo; disponivel: boolea
         <Text style={styles.statText}>{modulo.pontosTotal} pts</Text>
       </View>
 
+      {/* Badge de status */}
       {!disponivel && (
         <View style={styles.emBreve}>
           <Text style={styles.emBreveText}>EM BREVE</Text>
+        </View>
+      )}
+      {disponivel && emAndamento && (
+        <View style={styles.emAndamento}>
+          <Text style={styles.emAndamentoText}>EM ANDAMENTO · {aulasConcluidas}/{totalAulas} aulas</Text>
+        </View>
+      )}
+
+      {/* Barra de progresso */}
+      {disponivel && pct > 0 && (
+        <View style={styles.progressoTrack}>
+          <View style={[styles.progressoFill, { width: `${pct * 100}%` as any, backgroundColor: concluido ? '#4CAF50' : Colors.textPrimary }]} />
         </View>
       )}
     </TouchableOpacity>
@@ -211,5 +233,27 @@ const styles = StyleSheet.create({
     fontSize: FontSize.micro,
     color: Colors.textMuted,
     letterSpacing: 1,
+  },
+  emAndamento: {
+    alignSelf: 'flex-start',
+    borderWidth: 1,
+    borderColor: '#FF9800',
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    marginTop: Spacing.xs,
+  },
+  emAndamentoText: {
+    fontFamily: 'IBMPlexMono_700Bold',
+    fontSize: FontSize.micro,
+    color: '#FF9800',
+    letterSpacing: 1,
+  },
+  progressoTrack: {
+    height: 3,
+    backgroundColor: Colors.borderSubtle,
+    marginTop: Spacing.sm,
+  },
+  progressoFill: {
+    height: 3,
   },
 });
