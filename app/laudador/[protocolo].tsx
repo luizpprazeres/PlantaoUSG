@@ -11,21 +11,26 @@ import {
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
-import { JanelaBlock } from '@/components/laudador/JanelaBlock';
+import { JanelaRow } from '@/components/laudador/JanelaRow';
+import { JanelaSheet } from '@/components/laudador/JanelaSheet';
+import { LimitacoesDropdown } from '@/components/laudador/LimitacoesDropdown';
 import { ObservacoesBar } from '@/components/laudador/ObservacoesBar';
 import { VoiceButton } from '@/components/ui/VoiceButton';
 import { Chip } from '@/components/ui/Chip';
 import { useLaudadorStore } from '@/stores/laudadorStore';
 import { PROTOCOLO_MAP } from '@/data/protocolos';
 import { gerarLaudo } from '@/services/llmClient';
+import type { JanelaPayload } from '@/services/llmClient';
 import { useVoz } from '@/hooks/useVoz';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { Analytics } from '@/utils/analytics';
+import type { Janela } from '@/data/protocolos/tipos';
 
 export default function LaudadorScreen() {
   const { protocolo: protocoloId } = useLocalSearchParams<{ protocolo: string }>();
   const protocolo = PROTOCOLO_MAP[protocoloId ?? ''];
   const [gerando, setGerando] = useState(false);
+  const [sheetJanela, setSheetJanela] = useState<Janela | null>(null);
   const insets = useSafeAreaInsets();
 
   const {
@@ -55,28 +60,43 @@ export default function LaudadorScreen() {
     );
   }
 
+  const janelasVisiveis: Janela[] = [
+    ...protocolo.janelas,
+    ...(protocolo.janelasOpcionais ?? []).filter((j) =>
+      chipAtivadoresAtivos.includes(j.chipAtivadorId)
+    ),
+  ];
+
   const handleGerar = useCallback(async () => {
-    const totalChips = Object.values(achadosSelecionados).flat().length;
-    if (totalChips === 0 && !observacoes.trim()) {
-      Alert.alert('Nenhum achado', 'Selecione pelo menos um achado ou adicione observações.');
+    const todasNormais = janelasVisiveis.every(
+      (j) => (achadosSelecionados[j.id]?.length ?? 0) === 0
+    );
+    if (todasNormais && !observacoes.trim()) {
+      Alert.alert(
+        'Nenhum achado',
+        'Selecione pelo menos um achado ou adicione observações para gerar o laudo.'
+      );
       return;
     }
 
     setGerando(true);
     const inicio = Date.now();
+    const totalChips = Object.values(achadosSelecionados).flat().length;
     Analytics.chipsCount(totalChips);
     if (observacoes.trim()) Analytics.textFreeUsed();
 
     try {
-      const janelasComInput = protocolo.janelas
-        .filter((j) => (achadosSelecionados[j.id]?.length ?? 0) > 0)
-        .map((j) => ({
-          nome: j.nome,
-          achados: j.grupos
+      const janelas: JanelaPayload[] = janelasVisiveis.map((j) => {
+        const sel = achadosSelecionados[j.id] ?? [];
+        if (sel.length > 0) {
+          const achados = j.grupos
             .flatMap((g) => g.achados)
-            .filter((a) => achadosSelecionados[j.id]?.includes(a.id))
-            .map((a) => a.label),
-        }));
+            .filter((a) => sel.includes(a.id))
+            .map((a) => a.label);
+          return { nome: j.nome, achados };
+        }
+        return { nome: j.nome, status: 'normal' as const };
+      });
 
       const limitacoes = protocolo.limitacoesTecnicas
         .filter((l) => limitacoesSelecionadas.includes(l.id))
@@ -85,7 +105,7 @@ export default function LaudadorScreen() {
       const resultado = await gerarLaudo({
         protocolo: protocolo.nomeCompleto,
         transdutor: protocolo.transdutor,
-        janelas: janelasComInput,
+        janelas,
         observacoes,
         limitacoes,
       });
@@ -105,14 +125,7 @@ export default function LaudadorScreen() {
     } finally {
       setGerando(false);
     }
-  }, [achadosSelecionados, observacoes, limitacoesSelecionadas, protocolo]);
-
-  const janelasVisiveis = [
-    ...protocolo.janelas,
-    ...(protocolo.janelasOpcionais ?? []).filter((j) =>
-      chipAtivadoresAtivos.includes(j.chipAtivadorId)
-    ),
-  ];
+  }, [achadosSelecionados, observacoes, limitacoesSelecionadas, janelasVisiveis, protocolo]);
 
   return (
     <SafeAreaView style={styles.safe} edges={['top']}>
@@ -138,25 +151,20 @@ export default function LaudadorScreen() {
         )}
 
         {janelasVisiveis.map((janela) => (
-          <JanelaBlock
+          <JanelaRow
             key={janela.id}
             janela={janela}
             selecionados={achadosSelecionados[janela.id] ?? []}
-            onToggle={(achadoId) => toggleAchado(janela.id, achadoId)}
+            onPress={() => setSheetJanela(janela)}
+            onRemoveAchado={(achadoId) => toggleAchado(janela.id, achadoId)}
           />
         ))}
 
-        <Text style={styles.sectionLabel}>LIMITAÇÕES TÉCNICAS</Text>
-        <View style={styles.limitacoes}>
-          {protocolo.limitacoesTecnicas.map((l) => (
-            <Chip
-              key={l.id}
-              label={l.label}
-              selected={limitacoesSelecionadas.includes(l.id)}
-              onPress={() => toggleLimitacao(l.id)}
-            />
-          ))}
-        </View>
+        <LimitacoesDropdown
+          limitacoes={protocolo.limitacoesTecnicas}
+          selecionadas={limitacoesSelecionadas}
+          onToggle={toggleLimitacao}
+        />
       </ScrollView>
 
       <ObservacoesBar value={observacoes} onChange={setObservacoes} />
@@ -175,6 +183,15 @@ export default function LaudadorScreen() {
           )}
         </TouchableOpacity>
       </View>
+
+      <JanelaSheet
+        janela={sheetJanela}
+        selecionados={sheetJanela ? (achadosSelecionados[sheetJanela.id] ?? []) : []}
+        onToggle={(achadoId) => {
+          if (sheetJanela) toggleAchado(sheetJanela.id, achadoId);
+        }}
+        onClose={() => setSheetJanela(null)}
+      />
     </SafeAreaView>
   );
 }
@@ -196,15 +213,6 @@ const styles = StyleSheet.create({
   scroll: { flex: 1 },
   scrollContent: { paddingHorizontal: Spacing.base, paddingBottom: Spacing.xl },
   ativadores: { flexDirection: 'row', flexWrap: 'wrap', marginBottom: Spacing.base },
-  sectionLabel: {
-    fontFamily: 'IBMPlexMono_500Medium',
-    fontSize: FontSize.micro,
-    color: Colors.textMuted,
-    letterSpacing: 0.08,
-    marginTop: Spacing.lg,
-    marginBottom: Spacing.sm,
-  },
-  limitacoes: { flexDirection: 'row', flexWrap: 'wrap' },
   bottomBar: {
     flexDirection: 'row',
     alignItems: 'center',
