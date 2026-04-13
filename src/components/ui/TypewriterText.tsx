@@ -1,6 +1,53 @@
-import { useState, useEffect, useRef } from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { TouchableOpacity, StyleSheet, View } from 'react-native';
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withDelay,
+  Easing,
+  runOnJS,
+} from 'react-native-reanimated';
 import { Colors, FontSize } from '@/constants/theme';
+
+interface AnimatedLinhaProps {
+  texto: string;
+  index: number;
+  total: number;
+  onLastComplete?: () => void;
+  skipped: boolean;
+}
+
+function AnimatedLinha({ texto, index, total, onLastComplete, skipped }: AnimatedLinhaProps) {
+  const opacity = useSharedValue(skipped ? 1 : 0);
+  const translateX = useSharedValue(skipped ? 0 : -8);
+
+  useEffect(() => {
+    if (skipped) {
+      opacity.value = 1;
+      translateX.value = 0;
+      return;
+    }
+    const delay = index * 40;
+    const isLast = index === total - 1;
+    opacity.value = withDelay(delay, withTiming(1, { duration: 180 }));
+    translateX.value = withDelay(
+      delay,
+      withTiming(0, { duration: 180, easing: Easing.out(Easing.cubic) }, (finished) => {
+        if (finished && isLast && onLastComplete) {
+          runOnJS(onLastComplete)();
+        }
+      })
+    );
+  }, [skipped]);
+
+  const animStyle = useAnimatedStyle(() => ({
+    opacity: opacity.value,
+    transform: [{ translateX: translateX.value }],
+  }));
+
+  return <Animated.Text style={[styles.text, animStyle]}>{texto}</Animated.Text>;
+}
 
 interface TypewriterTextProps {
   text: string;
@@ -9,45 +56,28 @@ interface TypewriterTextProps {
 }
 
 export function TypewriterText({ text, style, onComplete }: TypewriterTextProps) {
-  const [displayed, setDisplayed] = useState('');
-  const [done, setDone] = useState(false);
-  const indexRef = useRef(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    indexRef.current = 0;
-    setDisplayed('');
-    setDone(false);
-
-    intervalRef.current = setInterval(() => {
-      if (indexRef.current >= text.length) {
-        if (intervalRef.current) clearInterval(intervalRef.current);
-        setDone(true);
-        onComplete?.();
-        return;
-      }
-      setDisplayed(text.slice(0, indexRef.current + 1));
-      indexRef.current += 1;
-    }, 15);
-
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [text]);
+  const [skipped, setSkipped] = useState(false);
+  const linhas = text.split('\n').filter(Boolean);
 
   const skip = () => {
-    if (intervalRef.current) clearInterval(intervalRef.current);
-    setDisplayed(text);
-    setDone(true);
+    setSkipped(true);
     onComplete?.();
   };
 
   return (
-    <TouchableOpacity onPress={!done ? skip : undefined} activeOpacity={1}>
-      <Text style={[styles.text, style]}>
-        {displayed}
-        {!done && <Text style={styles.cursor}>▌</Text>}
-      </Text>
+    <TouchableOpacity onPress={!skipped ? skip : undefined} activeOpacity={1}>
+      <View style={style}>
+        {linhas.map((linha, index) => (
+          <AnimatedLinha
+            key={index}
+            texto={linha}
+            index={index}
+            total={linhas.length}
+            onLastComplete={skipped ? undefined : onComplete}
+            skipped={skipped}
+          />
+        ))}
+      </View>
     </TouchableOpacity>
   );
 }
@@ -59,8 +89,5 @@ const styles = StyleSheet.create({
     color: Colors.textPrimary,
     lineHeight: FontSize.body * 1.7,
     letterSpacing: 0.02 * FontSize.body,
-  },
-  cursor: {
-    color: Colors.textSecondary,
   },
 });
