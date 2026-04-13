@@ -14,19 +14,20 @@ Gere DOIS laudos em JSON:
 
 TÉCNICA: [transdutor utilizado, objetivo do exame e limitações técnicas se houver]
 
-ACHADOS: [descrição pontual de todas as janelas recebidas]
+ACHADOS: [cada janela em linha própria, formato: "Nome da janela: achados." — uma janela por linha]
 
 IMPRESSÃO: [conclusão comedida com correlação diagnóstica. Ao final, adicione: "Exame POCUS à beira-leito, caráter focado e complementar. Não substitui avaliação ultrassonográfica formal."]
 
 REFERÊNCIAS: [1 a 3 referências bibliográficas relevantes ao protocolo, formato: Sobrenome A et al. Título abreviado. Periódico Abrev. Ano;Vol(N):pp.]
 
 2. OBJETIVO: parágrafo único para copiar/colar no prontuário, iniciando com:
-"POCUS [nome do protocolo] ([data do exame]): "
+"POCUS [sigla do protocolo] ([data do exame]): "
 seguido de 2-3 frases integrando transdutor, achados principais e impressão diagnóstica.
 Exemplo: "POCUS eFAST (12/04/2026): Exame realizado com transdutor convexo, direcionado para pesquisa de trauma abdominal. Moderada quantidade de líquido livre no espaço hepatorrenal, compatível com hemorragia intraabdominal no contexto de trauma."
 
 Regras estritas:
 - PT-BR técnico médico
+- No campo ACHADOS: cada janela deve ser descrita em uma linha separada, iniciando pelo nome da janela seguido de dois-pontos. Não agrupar múltiplas janelas numa só linha.
 - TODAS as janelas recebidas devem ser descritas nos ACHADOS. Janelas com status "normal" → descrever como sem alterações ecográficas (use frases clínicas apropriadas ao contexto da janela). Janelas com achados → descrever os achados listados.
 - Nunca escrever "não avaliada"
 - Nunca inventar achados
@@ -60,7 +61,8 @@ export default async function handler(req: Request): Promise<Response> {
   }
 
   const dataExame = new Date().toLocaleDateString('pt-BR');
-  const userPrompt = `Protocolo: ${protocolo}\nData do exame: ${dataExame}\n\n${JSON.stringify(inputBruto, null, 2)}`;
+  const inputBrutoTyped = inputBruto as { sigla?: string };
+  const userPrompt = `Protocolo: ${protocolo}\nSigla: ${inputBrutoTyped.sigla ?? ''}\nData do exame: ${dataExame}\n\n${JSON.stringify(inputBruto, null, 2)}`;
 
   const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
     method: 'POST',
