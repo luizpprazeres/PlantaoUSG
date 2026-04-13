@@ -149,7 +149,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: 9,
-    color: '#2E2E2E',
+    color: Colors.textPrimary,
     letterSpacing: 2.5,
     marginTop: 5,
   },
