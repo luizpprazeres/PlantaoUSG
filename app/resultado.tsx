@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
 import { ArrowLeft, Copy } from 'lucide-react-native';
 import { TypewriterText } from '@/components/ui/TypewriterText';
+import { LaudoExtensoRenderer } from '@/components/resultado/LaudoExtensoRenderer';
 import { FunilFooter } from '@/components/ui/FunilFooter';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { useLaudos } from '@/hooks/useLaudos';
@@ -65,6 +66,11 @@ export default function ResultadoScreen() {
     }
   };
 
+  // Salvar automaticamente ao entrar na tela
+  useEffect(() => {
+    salvar();
+  }, []);
+
   const voltar = () => {
     resetar();
     router.replace('/');
@@ -97,7 +103,11 @@ export default function ResultadoScreen() {
       </View>
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
-        <TypewriterText key={aba} text={texto} onComplete={salvar} />
+        {aba === 'extenso' ? (
+          <LaudoExtensoRenderer text={texto} fontSize={13} />
+        ) : (
+          <TypewriterText key={aba} text={texto} fontSize={13} />
+        )}
         <FunilFooter
           posicao="resultado"
           copy="Laudos mais extensos ou outros tipos? Laudo USG →"
