@@ -11,9 +11,9 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { ArrowLeft, Play, Clock, Globe } from 'lucide-react-native';
-import { VIDEOS, FILTROS, filtrarVideos } from '@/data/videos';
-import type { ProtocoloVideo } from '@/data/videos/tipos';
+import { ArrowLeft, Play, Clock, Globe, ExternalLink } from 'lucide-react-native';
+import { VIDEOS, FILTROS, RECURSOS_EXTERNOS, filtrarVideos } from '@/data/videos';
+import type { ProtocoloVideo, RecursoExterno } from '@/data/videos/tipos';
 import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
 
 function VideoCard({ item }: { item: ReturnType<typeof filtrarVideos>[number] }) {
@@ -74,6 +74,47 @@ function VideoCard({ item }: { item: ReturnType<typeof filtrarVideos>[number] })
           )}
         </View>
       </View>
+    </TouchableOpacity>
+  );
+}
+
+const CATEGORIA_LABEL: Record<RecursoExterno['categoria'], string> = {
+  atlas: 'ATLAS',
+  curso: 'CURSO',
+  referencia: 'REFERÊNCIA',
+  podcast: 'PODCAST',
+};
+
+function RecursoCard({ item }: { item: RecursoExterno }) {
+  const abrir = async () => {
+    const podeAbrir = await Linking.canOpenURL(item.url);
+    if (podeAbrir) {
+      await Linking.openURL(item.url);
+    } else {
+      Alert.alert('Erro', 'Não foi possível abrir o link.');
+    }
+  };
+
+  return (
+    <TouchableOpacity style={styles.recursoCard} onPress={abrir} activeOpacity={0.85}>
+      <View style={styles.recursoTopo}>
+        <View style={styles.recursoTags}>
+          <View style={styles.recursoTag}>
+            <Text style={styles.recursoTagText}>{CATEGORIA_LABEL[item.categoria]}</Text>
+          </View>
+          <View style={styles.recursoTag}>
+            <Text style={styles.recursoTagText}>{item.idioma.toUpperCase()}</Text>
+          </View>
+          {item.gratuito && (
+            <View style={[styles.recursoTag, styles.recursoTagGratis]}>
+              <Text style={styles.recursoTagText}>GRATUITO</Text>
+            </View>
+          )}
+        </View>
+        <ExternalLink size={14} color={Colors.textMuted} />
+      </View>
+      <Text style={styles.recursoNome}>{item.nome}</Text>
+      <Text style={styles.recursoDesc} numberOfLines={3}>{item.descricao}</Text>
     </TouchableOpacity>
   );
 }
@@ -139,6 +180,17 @@ export default function VideosScreen() {
         ) : (
           videosFiltrados.map((v) => <VideoCard key={v.id} item={v} />)
         )}
+
+        {/* Recursos externos */}
+        <View style={styles.recursosSection}>
+          <Text style={styles.recursosSectionTitle}>RECURSOS EXTERNOS</Text>
+          <Text style={styles.recursosSectionDesc}>
+            Sites e plataformas de referência para estudo de POCUS
+          </Text>
+        </View>
+        {RECURSOS_EXTERNOS.map((r) => (
+          <RecursoCard key={r.id} item={r} />
+        ))}
       </ScrollView>
     </SafeAreaView>
   );
@@ -300,6 +352,69 @@ const styles = StyleSheet.create({
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: FontSize.micro,
     color: Colors.textMuted,
+  },
+
+  // Recursos externos
+  recursosSection: {
+    marginTop: Spacing.lg,
+    marginBottom: Spacing.sm,
+    paddingTop: Spacing.lg,
+    borderTopWidth: 1,
+    borderTopColor: Colors.borderSubtle,
+  },
+  recursosSectionTitle: {
+    fontFamily: 'IBMPlexMono_700Bold',
+    fontSize: FontSize.label,
+    color: Colors.textPrimary,
+    letterSpacing: 1,
+  },
+  recursosSectionDesc: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: FontSize.caption,
+    color: Colors.textMuted,
+    marginTop: Spacing.xs,
+  },
+  recursoCard: {
+    backgroundColor: Colors.bgElevated,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    padding: Spacing.md,
+    gap: Spacing.xs,
+  },
+  recursoTopo: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  recursoTags: {
+    flexDirection: 'row',
+    gap: Spacing.xs,
+  },
+  recursoTag: {
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderWidth: 1,
+    borderColor: Colors.borderDefault,
+  },
+  recursoTagGratis: {
+    borderColor: '#2A5C2A',
+  },
+  recursoTagText: {
+    fontFamily: 'IBMPlexMono_500Medium',
+    fontSize: FontSize.micro,
+    color: Colors.textMuted,
+    letterSpacing: 0.5,
+  },
+  recursoNome: {
+    fontFamily: 'IBMPlexMono_700Bold',
+    fontSize: FontSize.body,
+    color: Colors.textPrimary,
+  },
+  recursoDesc: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: FontSize.caption,
+    color: Colors.textSecondary,
+    lineHeight: FontSize.caption * 1.6,
   },
 
   // Vazio

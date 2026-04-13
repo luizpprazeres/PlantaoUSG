@@ -106,6 +106,9 @@ export default function HomeScreen() {
           <TouchableOpacity onPress={() => router.push('/videos')}>
             <Text style={styles.navLink}>VÍDEOS</Text>
           </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/curso')}>
+            <Text style={styles.navLink}>CURSO</Text>
+          </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push('/sobre')}>
             <Text style={styles.navLink}>SOBRE</Text>
           </TouchableOpacity>

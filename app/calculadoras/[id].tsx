@@ -106,6 +106,10 @@ export default function CalculadoraScreen() {
               <Text style={styles.resultadoInterp}>{resultado.interpretacao}</Text>
             </View>
           )}
+
+          {calc.fonte && (
+            <Text style={styles.fonte}>Ref.: {calc.fonte}</Text>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -146,4 +150,5 @@ const styles = StyleSheet.create({
   },
   resultadoValor: { fontFamily: 'IBMPlexMono_700Bold', fontSize: FontSize.heading, marginBottom: Spacing.sm },
   resultadoInterp: { fontFamily: 'IBMPlexMono_400Regular', fontSize: FontSize.caption, color: Colors.textSecondary, lineHeight: FontSize.caption * 1.7 },
+  fonte: { fontFamily: 'IBMPlexMono_400Regular', fontSize: 9, color: Colors.textMuted, marginTop: Spacing.lg, lineHeight: 14 },
 });

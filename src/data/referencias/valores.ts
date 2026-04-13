@@ -1,0 +1,278 @@
+import type { GrupoValores } from './tipos';
+
+export const VALORES_REFERENCIA: GrupoValores[] = [
+  // ── eFAST ─────────────────────────────────────────────────────────────────
+  {
+    protocolo: 'efast',
+    titulo: 'eFAST — Valores de Referência',
+    valores: [
+      {
+        id: 'efast_liquido_livre',
+        parametro: 'Líquido livre abdominal',
+        normal: 'Ausente',
+        anormal: 'Qualquer quantidade em trauma = positivo',
+        critico: 'Quantidade moderada-grande = intervenção cirúrgica imediata',
+        protocolo: 'efast',
+        nota: 'Qualquer líquido em Morrison, esplenorrenal ou pélvico é patológico no contexto de trauma',
+      },
+      {
+        id: 'efast_pneumotorax',
+        parametro: 'Sinal do deslizamento pulmonar',
+        normal: 'Presente bilateralmente',
+        anormal: 'Ausente = suspeita de pneumotórax',
+        critico: 'Ausente + ponto de pulmão confirmado = pneumotórax',
+        protocolo: 'efast',
+        nota: 'Ausência isolada não confirma pneumotórax — também ocorre em atelectasia, intubação seletiva, aderências pleurais',
+      },
+      {
+        id: 'efast_pericardio',
+        parametro: 'Derrame pericárdico',
+        normal: 'Ausente ou traço fisiológico (<2mm posterior)',
+        anormal: 'Halo anecoico circunferencial',
+        critico: 'Tamponamento: colapso de AD em diástole ou VD em sístole',
+        protocolo: 'efast',
+      },
+      {
+        id: 'efast_hemotorax',
+        parametro: 'Líquido pleural em trauma',
+        normal: 'Ausente',
+        anormal: 'Qualquer quantidade = hemotórax até prova contrária',
+        protocolo: 'efast',
+        nota: 'Avaliado no espaço esplenorrenal e hepatorenal superiormente',
+      },
+    ],
+  },
+
+  // ── BLUE ──────────────────────────────────────────────────────────────────
+  {
+    protocolo: 'blue',
+    titulo: 'BLUE — Padrões Ultrassonográficos Pulmonares',
+    valores: [
+      {
+        id: 'blue_linhas_a',
+        parametro: 'Linhas A',
+        normal: 'Padrão normal — reverberações horizontais da pleura',
+        anormal: 'A-lines + ausência de deslizamento = pneumotórax',
+        protocolo: 'blue',
+        nota: 'A-lines + deslizamento presente = parênquima normal (ou TEP)',
+      },
+      {
+        id: 'blue_linhas_b',
+        parametro: 'Linhas B (cometas)',
+        normal: 'Até 2 linhas B por campo = normal',
+        anormal: '≥3 linhas B por campo = síndrome intersticial',
+        critico: 'Linhas B confluentes (B-profile) = edema pulmonar grave',
+        protocolo: 'blue',
+        unidade: 'linhas/campo',
+        nota: 'B-lines bilaterais = edema cardiogênico. B-lines unilaterais = pneumonia, contusão',
+      },
+      {
+        id: 'blue_consolidacao',
+        parametro: 'Consolidação',
+        normal: 'Ausente',
+        anormal: 'Tecido ecogênico sem aeração — padrão "tecido"',
+        protocolo: 'blue',
+        nota: 'Broncograma aéreo dinâmico = pneumonia. Broncograma fluido = atelectasia absortiva',
+      },
+      {
+        id: 'blue_pleura',
+        parametro: 'Linha pleural',
+        normal: 'Regular, hiperecogênica, com deslizamento',
+        anormal: 'Espessada, irregular = pleurite, COVID-19',
+        protocolo: 'blue',
+      },
+    ],
+  },
+
+  // ── RUSH ──────────────────────────────────────────────────────────────────
+  {
+    protocolo: 'rush',
+    titulo: 'RUSH — Avaliação Hemodinâmica',
+    valores: [
+      {
+        id: 'rush_vci_diametro',
+        parametro: 'VCI — Diâmetro',
+        normal: '1,5 – 2,5 cm',
+        anormal: '<1,5 cm = hipovolemia / >2,5 cm = hipervolemia ou obstrução',
+        critico: '<1 cm = hipovolemia grave',
+        unidade: 'cm',
+        protocolo: 'rush',
+      },
+      {
+        id: 'rush_vci_colapso',
+        parametro: 'VCI — Colapso inspiratório',
+        normal: '>50% colapso = PVC baixa (<8 mmHg)',
+        anormal: '<50% colapso = PVC elevada (>8 mmHg)',
+        protocolo: 'rush',
+        nota: 'Avaliado a 1-2 cm da entrada na AD, em respiração espontânea. Em VM, padrão invertido.',
+      },
+      {
+        id: 'rush_ef',
+        parametro: 'Fração de ejeção visual (olho clínico)',
+        normal: '>55%',
+        anormal: '30–55% = disfunção moderada',
+        critico: '<30% = disfunção grave',
+        protocolo: 'rush',
+        nota: 'Avaliação qualitativa: normal = paredes se tocam quase completamente; reduzida = pouco espessamento/movimento',
+      },
+      {
+        id: 'rush_pericardio',
+        parametro: 'Derrame pericárdico',
+        normal: 'Ausente',
+        anormal: 'Halo anecoico ao redor do coração',
+        critico: 'Colapso de AD/VD = tamponamento pericárdico',
+        protocolo: 'rush',
+      },
+    ],
+  },
+
+  // ── CARDÍACO ──────────────────────────────────────────────────────────────
+  {
+    protocolo: 'cardiac',
+    titulo: 'Cardíaco POCUS — Valores de Referência',
+    valores: [
+      {
+        id: 'cardiac_tapse',
+        parametro: 'TAPSE (excursão sistólica do anel tricúspide)',
+        normal: '≥17 mm',
+        anormal: '<17 mm = disfunção sistólica VD',
+        critico: '<10 mm = disfunção VD grave',
+        unidade: 'mm',
+        protocolo: 'cardiac',
+        nota: 'Medido em modo M na apical 4 câmaras. Melhor parâmetro de função VD no POCUS.',
+      },
+      {
+        id: 'cardiac_aorta',
+        parametro: 'Aorta torácica (via paraesternal long)',
+        normal: '<3,8 cm',
+        anormal: '3,8–5,0 cm = dilatação moderada',
+        critico: '>5,0 cm = aneurisma significativo',
+        unidade: 'cm',
+        protocolo: 'cardiac',
+      },
+      {
+        id: 'cardiac_vd_vao',
+        parametro: 'Relação VD/VE (4 câmaras)',
+        normal: 'VD < 2/3 do VE',
+        anormal: 'VD ≈ VE = dilatação VD',
+        critico: 'VD > VE = sobrecarga grave (TEP, HAP)',
+        protocolo: 'cardiac',
+        nota: 'Sinal D no eixo curto paraesternal reforça sobrecarga de pressão de VD',
+      },
+      {
+        id: 'cardiac_ef_simpson',
+        parametro: 'FE pelo método de Simpson (biplanar)',
+        normal: '≥55%',
+        anormal: '40–54% = disfunção leve',
+        critico: '<40% = disfunção moderada-grave',
+        protocolo: 'cardiac',
+      },
+    ],
+  },
+
+  // ── VExUS ─────────────────────────────────────────────────────────────────
+  {
+    protocolo: 'vexus',
+    titulo: 'VExUS — Gradação da Congestão Venosa',
+    valores: [
+      {
+        id: 'vexus_vci',
+        parametro: 'VCI — Pré-requisito VExUS',
+        normal: '<2 cm (sem VExUS)',
+        anormal: '≥2 cm = avaliar grau VExUS',
+        unidade: 'cm',
+        protocolo: 'vexus',
+        nota: 'VCI <2 cm exclui congestão significativa — não pontuar grau VExUS',
+      },
+      {
+        id: 'vexus_grau0',
+        parametro: 'VExUS Grau 0',
+        normal: 'VCI <2 cm — sem congestão venosa',
+        protocolo: 'vexus',
+      },
+      {
+        id: 'vexus_grau1',
+        parametro: 'VExUS Grau 1',
+        normal: 'VCI ≥2 cm + padrões normais em todos vasos',
+        protocolo: 'vexus',
+        nota: 'Congestão leve — IRA pós-op risco baixo',
+      },
+      {
+        id: 'vexus_grau2',
+        parametro: 'VExUS Grau 2',
+        normal: 'VCI ≥2 cm + 1 padrão anormal',
+        anormal: 'Portal pulsátil ou renal monofásico ou HV sistólica dominante',
+        protocolo: 'vexus',
+        nota: 'Congestão moderada',
+      },
+      {
+        id: 'vexus_grau3',
+        parametro: 'VExUS Grau 3',
+        normal: 'N/A',
+        anormal: 'VCI ≥2 cm + ≥2 padrões anormais graves',
+        critico: 'Associado a IRA em 85% dos casos pós-cirurgia cardíaca (Beaubien-Souligny 2020)',
+        protocolo: 'vexus',
+        nota: 'Congestão grave — considerar diurese agressiva',
+      },
+      {
+        id: 'vexus_portal',
+        parametro: 'Veia porta — pulsatilidade',
+        normal: 'Fluxo contínuo com variação respiratória leve (<30%)',
+        anormal: '>30% pulsatilidade = congestão moderada',
+        critico: 'Fluxo pulsátil bifásico = congestão grave',
+        protocolo: 'vexus',
+      },
+    ],
+  },
+
+  // ── OBSTÉTRICO ────────────────────────────────────────────────────────────
+  {
+    protocolo: 'obstetrico',
+    titulo: 'Obstétrico — Valores de Referência',
+    valores: [
+      {
+        id: 'obs_bcf',
+        parametro: 'Frequência cardíaca fetal',
+        normal: '110 – 160 bpm',
+        anormal: '<110 bpm (bradicardia) ou >160 bpm (taquicardia)',
+        critico: '<80 bpm = bradicardia grave — contato obstétrico urgente',
+        unidade: 'bpm',
+        protocolo: 'obstetrico',
+      },
+      {
+        id: 'obs_bcf_visivel',
+        parametro: 'Atividade cardíaca fetal visível (POCUS)',
+        normal: 'Detectável a partir de 6–7 semanas (transvaginal)',
+        anormal: 'Ausente após 7 semanas = revisar datação / considerar óbito fetal',
+        protocolo: 'obstetrico',
+        nota: 'Via transabdominal: visível a partir de 8–9 semanas. Confirmar sempre por 2 observadores.',
+      },
+      {
+        id: 'obs_saco_gestacional',
+        parametro: 'Saco gestacional intrauterino',
+        normal: 'Visível a partir de 4,5–5 semanas (transvaginal)',
+        anormal: 'Ausente + β-hCG >1.500–2.000 mUI/mL = suspeita de ectópica',
+        protocolo: 'obstetrico',
+        nota: 'Pseudossaco (fino, triangular, sem casca dupla) não confirma gestação intrauterina',
+      },
+      {
+        id: 'obs_liquido_livre',
+        parametro: 'Líquido livre pélvico',
+        normal: 'Mínimo traço em fundo de saco = pode ser fisiológico',
+        anormal: 'Quantidade moderada + gestação não visualizada = ectópica rota',
+        critico: 'Líquido livre em abdome superior + instabilidade = hemoperitônio',
+        protocolo: 'obstetrico',
+      },
+      {
+        id: 'obs_ila',
+        parametro: 'ILA (Índice de Líquido Amniótico)',
+        normal: '8 – 24 cm (4 quadrantes)',
+        anormal: '5–8 cm = oligohidrâmnio leve | >24 cm = polidrâmnio',
+        critico: '<5 cm = oligohidrâmnio grave | bolsão único <2 cm = anidrâmnio funcional',
+        unidade: 'cm',
+        protocolo: 'obstetrico',
+        nota: 'Estimativa qualitativa no POCUS de emergência. ILA formal requer biometria completa.',
+      },
+    ],
+  },
+];

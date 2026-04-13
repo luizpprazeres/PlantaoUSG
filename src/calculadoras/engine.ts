@@ -6,6 +6,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Índice de Choque',
     categoria: 'CHOQUE',
     descricao: 'FC / PAS — triagem rápida de gravidade hemodinâmica',
+    fonte: 'Cannon CM et al. Ann Emerg Med. 2009;54(1):29-36',
     campos: [
       { id: 'fc', label: 'Frequência Cardíaca', unit: 'bpm', type: 'number', min: 20, max: 300, placeholder: 'ex: 110' },
       { id: 'pas', label: 'Pressão Arterial Sistólica', unit: 'mmHg', type: 'number', min: 40, max: 300, placeholder: 'ex: 90' },
@@ -23,6 +24,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Pressão Arterial Média (PAM)',
     categoria: 'CHOQUE',
     descricao: 'Pressão de perfusão tecidual — meta ≥65 mmHg na sepse',
+    fonte: 'Rhodes A et al. Surviving Sepsis Campaign. Crit Care Med. 2017;45(3):486-552',
     campos: [
       { id: 'pas', label: 'Pressão Arterial Sistólica', unit: 'mmHg', type: 'number', min: 40, max: 300, placeholder: 'ex: 100' },
       { id: 'pad', label: 'Pressão Arterial Diastólica', unit: 'mmHg', type: 'number', min: 20, max: 200, placeholder: 'ex: 60' },
@@ -40,6 +42,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'qSOFA',
     categoria: 'SEPSE',
     descricao: 'Triagem rápida de disfunção orgânica por sepse fora da UTI',
+    fonte: 'Singer M et al. JAMA. 2016;315(8):801-810 (Sepsis-3)',
     campos: [
       {
         id: 'glasgow',
@@ -73,6 +76,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Wells TVP',
     categoria: 'PULMONAR / TVP',
     descricao: 'Probabilidade pré-teste de trombose venosa profunda',
+    fonte: 'Wells PS et al. Lancet. 1997;350(9094):1795-1798',
     campos: [
       { id: 'cancer', label: 'Câncer ativo (tratamento em curso ou últimos 6 meses)', type: 'select', options: [{ label: 'Não', value: 0 }, { label: 'Sim (+1)', value: 1 }] },
       { id: 'paralisia', label: 'Paralisia, paresia ou imobilização recente de MMII', type: 'select', options: [{ label: 'Não', value: 0 }, { label: 'Sim (+1)', value: 1 }] },
@@ -97,6 +101,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Derrame Pleural — Estimativa de Volume',
     categoria: 'PULMONAR / TVP',
     descricao: 'Estimativa pelo método de Balik (USG em decúbito lateral)',
+    fonte: 'Balik M et al. Intensive Care Med. 2006;32(2):318-321',
     campos: [
       { id: 'distancia', label: 'Distância hemidiafragma–base pulmonar em decúbito lateral', unit: 'mm', type: 'number', min: 0, max: 200, placeholder: 'ex: 45' },
     ],
@@ -113,6 +118,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Ascite — Graduação Ultrassonográfica',
     categoria: 'ABDOMINAL',
     descricao: 'Classificação semiquantitativa de ascite ao POCUS',
+    fonte: 'Alhammadi AH et al. J Ultrasound Med. 2014;33(8):1451-1457',
     campos: [
       {
         id: 'grau',
@@ -136,6 +142,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Débito Cardíaco (VTI)',
     categoria: 'CARDÍACO',
     descricao: 'Cálculo pelo VTI na via de saída do ventrículo esquerdo (VSVE)',
+    fonte: 'Levitov A et al. SCCM Guidelines. Crit Care Med. 2016;44(8):1579-1602',
     campos: [
       { id: 'vti', label: 'VTI da VSVE (integral velocidade-tempo)', unit: 'cm', type: 'number', min: 5, max: 50, placeholder: 'ex: 22' },
       { id: 'diametro', label: 'Diâmetro da VSVE', unit: 'mm', type: 'number', min: 10, max: 35, placeholder: 'ex: 20' },
@@ -157,6 +164,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'TAPSE',
     categoria: 'CARDÍACO',
     descricao: 'Tricuspid Annular Plane Systolic Excursion — função sistólica do VD',
+    fonte: 'Lang RM et al. ASE/EACVI Guidelines. J Am Soc Echocardiogr. 2015;28(1):1-39',
     campos: [
       { id: 'valor', label: 'TAPSE medido', unit: 'mm', type: 'number', min: 5, max: 40, placeholder: 'ex: 18' },
     ],
@@ -173,6 +181,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Diâmetro da Aorta Abdominal',
     categoria: 'ABDOMINAL',
     descricao: 'Triagem de aneurisma de aorta abdominal (AAA)',
+    fonte: 'Chaikof EL et al. SVS Guidelines. J Vasc Surg. 2018;67(1):2-77',
     campos: [
       { id: 'diametro', label: 'Diâmetro máximo da aorta abdominal', unit: 'mm', type: 'number', min: 10, max: 120, placeholder: 'ex: 28' },
     ],
@@ -190,6 +199,7 @@ export const CALCULADORAS: Calculadora[] = [
     nome: 'Fração de Ejeção Visual (qualitativa)',
     categoria: 'CARDÍACO',
     descricao: 'Estimativa visual da FEVE ao POCUS — método eyeballing',
+    fonte: 'Via G et al. J Am Soc Echocardiogr. 2014;27(7):683.e1-33',
     campos: [
       {
         id: 'faixa',

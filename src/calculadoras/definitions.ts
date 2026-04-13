@@ -31,5 +31,6 @@ export type Calculadora = {
   categoria: string;
   descricao: string;
   campos: Campo[];
+  fonte?: string;
   calcular: (valores: Record<string, number>) => ResultadoCalculo;
 };
