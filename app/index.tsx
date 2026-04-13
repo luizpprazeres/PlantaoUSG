@@ -18,7 +18,7 @@ import { Analytics } from '@/utils/analytics';
 import { useLaudadorStore } from '@/stores/laudadorStore';
 import { usePreferences } from '@/hooks/usePreferences';
 
-const DISPONIVEIS = ['efast', 'blue', 'rush', 'cardiac', 'vexus'];
+const DISPONIVEIS = ['efast', 'blue', 'rush', 'cardiac', 'vexus', 'obstetrico'];
 
 const PLACEHOLDER_PROTOCOLOS = [
   { id: 'vascular2', nome: 'Vascular', indicacao: 'Aorta abdominal, veia cava, vasos periféricos', categoria: 'VASCULAR' },

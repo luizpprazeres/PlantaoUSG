@@ -3,6 +3,7 @@ import { BLUE } from './blue';
 import { RUSH } from './rush';
 import { CARDIAC } from './cardiac';
 import { VEXUS } from './vexus';
+import { OBSTETRICO } from './obstetrico';
 import type { Protocolo } from './tipos';
 
 export const PROTOCOLOS: Protocolo[] = [
@@ -11,6 +12,7 @@ export const PROTOCOLOS: Protocolo[] = [
   RUSH,
   CARDIAC,
   VEXUS,
+  OBSTETRICO,
 ];
 
 export const PROTOCOLO_MAP: Record<string, Protocolo> = Object.fromEntries(
