@@ -9,7 +9,8 @@ export type JanelaPayload =
   | { nome: string; status: 'normal' };
 
 export interface InputBruto {
-  protocolo: string;
+  protocolo: string;    // nome completo ex: "Extended Focused Assessment with Sonography in Trauma"
+  sigla: string;        // abreviação ex: "eFAST"
   transdutor: string;
   janelas: JanelaPayload[];
   observacoes: string;

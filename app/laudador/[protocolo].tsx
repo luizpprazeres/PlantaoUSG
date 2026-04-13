@@ -153,6 +153,7 @@ export default function LaudadorScreen() {
 
       const resultado = await gerarLaudo({
         protocolo: protocolo.nomeCompleto,
+        sigla: protocolo.nome,
         transdutor: protocolo.transdutor,
         janelas,
         observacoes,
