@@ -1,0 +1,162 @@
+<h2>Fluxo completo — Lista + Bottom Sheet</h2>
+<p class="subtitle">Três estados da tela do laudador. Toque para selecionar qual parece certo.</p>
+
+<div class="cards">
+
+  <!-- Estado 1: Tela principal -->
+  <div class="card" data-choice="tela-principal" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#000;font-family:monospace;border-bottom:1px solid #1a1a1a;">
+
+      <!-- Header -->
+      <div style="display:flex;align-items:center;padding:12px 14px;border-bottom:1px solid #0f0f0f;">
+        <span style="color:#fff;font-size:10px;margin-right:8px;">←</span>
+        <span style="color:#fff;font-size:13px;font-weight:700;">eFAST</span>
+      </div>
+
+      <!-- Lista de janelas -->
+      <div style="padding:0 14px;">
+
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#fff;font-size:11px;">QSD — Morrison</span>
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="background:#fff;color:#000;font-size:8px;padding:2px 7px;border-radius:2px;font-weight:600;">Lâmina fina</span>
+            <span style="color:#444;font-size:9px;">×</span>
+          </div>
+        </div>
+
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">QSE — Esplenorrenal</span>
+          <span style="color:#1e1e1e;font-size:9px;">sem alteração</span>
+        </div>
+
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">Suprapúbica</span>
+          <span style="color:#1e1e1e;font-size:9px;">sem alteração</span>
+        </div>
+
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">Pleural Direito</span>
+          <span style="color:#1e1e1e;font-size:9px;">sem alteração</span>
+        </div>
+
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">Pleural Esquerdo</span>
+          <span style="color:#1e1e1e;font-size:9px;">sem alteração</span>
+        </div>
+
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">Pericárdio</span>
+          <span style="color:#1e1e1e;font-size:9px;">sem alteração</span>
+        </div>
+
+      </div>
+
+      <!-- Dropdown limitações -->
+      <div style="margin:10px 14px;border:1px solid #111;border-radius:4px;padding:10px;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#2a2a2a;font-size:9px;letter-spacing:2px;">LIMITAÇÕES TÉCNICAS</span>
+        <span style="color:#2a2a2a;font-size:10px;">▾</span>
+      </div>
+
+      <!-- Bottom bar -->
+      <div style="padding:10px 14px;background:#0a0a0a;border-top:1px solid #111;display:flex;justify-content:space-between;align-items:center;">
+        <span style="color:#333;font-size:10px;">🎤</span>
+        <span style="background:#fff;color:#000;font-size:10px;font-weight:700;padding:8px 24px;border-radius:2px;">GERAR</span>
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3>1 — Tela principal</h3>
+      <p>Lista compacta de janelas. Alterações aparecem como tags brancas ao lado. "sem alteração" em cinza escuro. Limitações em dropdown. Toque em qualquer linha para abrir o sheet.</p>
+    </div>
+  </div>
+
+  <!-- Estado 2: Sheet aberto -->
+  <div class="card" data-choice="sheet-aberto" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#000;font-family:monospace;border-bottom:1px solid #1a1a1a;position:relative;">
+
+      <!-- Tela atrás (escurecida) -->
+      <div style="padding:0 14px;opacity:0.25;">
+        <div style="display:flex;align-items:center;padding:12px 0;border-bottom:1px solid #0f0f0f;">
+          <span style="color:#fff;font-size:13px;font-weight:700;">eFAST</span>
+        </div>
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;">
+          <span style="color:#fff;font-size:11px;">QSD — Morrison</span>
+        </div>
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;">
+          <span style="color:#fff;font-size:11px;">QSE — Esplenorrenal</span>
+        </div>
+      </div>
+
+      <!-- Bottom Sheet -->
+      <div style="background:#0d0d0d;border-top:1px solid #222;border-radius:12px 12px 0 0;padding:14px;margin-top:-20px;">
+        <!-- Handle -->
+        <div style="width:32px;height:3px;background:#222;border-radius:2px;margin:0 auto 12px;"></div>
+
+        <!-- Título do sheet -->
+        <div style="color:#555;font-size:9px;letter-spacing:3px;margin-bottom:12px;">QSE — ESPLENORRENAL</div>
+
+        <!-- Chips de alterações APENAS -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+          <span style="background:#141414;border:1px solid #222;color:#888;font-size:9px;padding:6px 10px;border-radius:3px;">Lâmina fina perisplênica</span>
+          <span style="background:#fff;color:#000;font-size:9px;padding:6px 10px;border-radius:3px;font-weight:600;">Moderada qtd. perisplênica ✓</span>
+          <span style="background:#141414;border:1px solid #222;color:#888;font-size:9px;padding:6px 10px;border-radius:3px;">Volumoso líquido</span>
+          <span style="background:#141414;border:1px solid #222;color:#888;font-size:9px;padding:6px 10px;border-radius:3px;">Conteúdo hemático</span>
+          <span style="background:#141414;border:1px solid #222;color:#888;font-size:9px;padding:6px 10px;border-radius:3px;">Goteira parietocólica E</span>
+        </div>
+
+        <!-- Instrução -->
+        <div style="color:#222;font-size:8px;text-align:center;">deslize para baixo para fechar</div>
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3>2 — Sheet aberto</h3>
+      <p>Só achados alterados visíveis. Seleção múltipla com toggle. Handle no topo para deslizar e fechar. Fundo escurece levemente. Toca fora ou desliza → fecha e salva.</p>
+    </div>
+  </div>
+
+  <!-- Estado 3: Limitações dropdown -->
+  <div class="card" data-choice="limitacoes-dropdown" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#000;font-family:monospace;border-bottom:1px solid #1a1a1a;">
+
+      <div style="padding:0 14px;">
+
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;display:flex;justify-content:space-between;align-items:center;opacity:0.3;">
+          <span style="color:#fff;font-size:11px;">QSD — Morrison</span>
+          <span style="background:#fff;color:#000;font-size:8px;padding:2px 7px;border-radius:2px;">Lâmina fina</span>
+        </div>
+        <div style="border-bottom:1px solid #0f0f0f;padding:11px 0;opacity:0.3;">
+          <span style="color:#333;font-size:11px;">QSE — Esplenorrenal</span>
+        </div>
+
+        <!-- Limitações expandido -->
+        <div style="border:1px solid #222;border-radius:4px;margin:10px 0;overflow:hidden;">
+          <div style="padding:10px 12px;display:flex;justify-content:space-between;background:#0a0a0a;">
+            <span style="color:#888;font-size:9px;letter-spacing:2px;">LIMITAÇÕES TÉCNICAS</span>
+            <span style="color:#555;font-size:10px;">▴</span>
+          </div>
+          <div style="padding:10px 12px;display:flex;flex-wrap:wrap;gap:6px;border-top:1px solid #111;">
+            <span style="background:#fff;color:#000;font-size:8px;padding:4px 8px;border-radius:2px;font-weight:600;">Obesidade ✓</span>
+            <span style="background:#111;border:1px solid #1a1a1a;color:#444;font-size:8px;padding:4px 8px;border-radius:2px;">Enfisema subcutâneo</span>
+            <span style="background:#111;border:1px solid #1a1a1a;color:#444;font-size:8px;padding:4px 8px;border-radius:2px;">Curativo/dreno</span>
+            <span style="background:#111;border:1px solid #1a1a1a;color:#444;font-size:8px;padding:4px 8px;border-radius:2px;">Ventilação mecânica</span>
+            <span style="background:#111;border:1px solid #1a1a1a;color:#444;font-size:8px;padding:4px 8px;border-radius:2px;">Janela acústica ruim</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Bottom bar -->
+      <div style="padding:10px 14px;background:#0a0a0a;border-top:1px solid #111;display:flex;justify-content:space-between;">
+        <span style="color:#333;font-size:10px;">🎤</span>
+        <span style="background:#fff;color:#000;font-size:10px;font-weight:700;padding:8px 24px;border-radius:2px;">GERAR</span>
+      </div>
+
+    </div>
+    <div class="card-body">
+      <h3>3 — Dropdown de limitações</h3>
+      <p>Toque no bloco de limitações → expande inline (não é sheet). Chips aparecem abaixo do título. Toca novamente para fechar. Selecionadas ficam com tag branca.</p>
+    </div>
+  </div>
+
+</div>

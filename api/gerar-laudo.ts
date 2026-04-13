@@ -14,26 +14,29 @@ Gere DOIS laudos em JSON:
 
 TÉCNICA: [transdutor utilizado, objetivo do exame e limitações técnicas se houver]
 
-ACHADOS: [cada janela em linha própria, formato: "Nome da janela: achados." — uma janela por linha]
+ACHADOS: [achados em prosa clínica natural — veja regras de escrita abaixo]
 
 IMPRESSÃO: [conclusão comedida com correlação diagnóstica. Ao final, adicione: "Exame POCUS à beira-leito, caráter focado e complementar. Não substitui avaliação ultrassonográfica formal."]
 
-REFERÊNCIAS: [1 a 3 referências bibliográficas relevantes ao protocolo, formato: Sobrenome A et al. Título abreviado. Periódico Abrev. Ano;Vol(N):pp.]
+REFERÊNCIAS: [exatamente 2 referências bibliográficas mais relevantes ao protocolo, formato: Sobrenome A et al. Título abreviado. Periódico Abrev. Ano;Vol(N):pp.]
 
 2. OBJETIVO: parágrafo único para copiar/colar no prontuário, iniciando com:
 "POCUS [sigla do protocolo] ([data do exame]): "
 seguido de 2-3 frases integrando transdutor, achados principais e impressão diagnóstica.
 Exemplo: "POCUS eFAST (12/04/2026): Exame realizado com transdutor convexo, direcionado para pesquisa de trauma abdominal. Moderada quantidade de líquido livre no espaço hepatorrenal, compatível com hemorragia intraabdominal no contexto de trauma."
 
-Regras estritas:
+Regras de escrita para ACHADOS — naturalidade clínica:
+- Escreva como um médico experiente ditaria um laudo: direto, sem redundâncias
+- NUNCA repita a localização no achado quando ela já está no início da linha. Errado: "Pleural direito: derrame pleural direito" (repete 'direito'). Certo: "Pleural direito: derrame de pequena monta"
+- Quando o achado já contém naturalmente a localização, escreva sem prefixo de janela. Em vez de "Morrison: líquido livre em espaço hepatorrenal (Morrison)", escreva "Espaço hepatorrenal livre de líquido."
+- Prefira prosa clínica fluente a formato rígido "janela: achado". Ex: "Derrame pleural direito de pequena monta, sem compressão pulmonar significativa."
+- Cada achado em linha própria. Janelas normais: frase curta e positiva. Ex: "Pericárdio sem derrame." / "Pleura bilateral sem linhas B."
 - PT-BR técnico médico
-- No campo ACHADOS: cada janela deve ser descrita em uma linha separada, iniciando pelo nome da janela seguido de dois-pontos. Não agrupar múltiplas janelas numa só linha.
-- TODAS as janelas recebidas devem ser descritas nos ACHADOS. Janelas com status "normal" → descrever como sem alterações ecográficas (use frases clínicas apropriadas ao contexto da janela). Janelas com achados → descrever os achados listados.
-- Nunca escrever "não avaliada"
-- Nunca inventar achados
-- Linguagem comedida: "sugestivo de", "compatível com", "sem sinais ecográficos de". Nunca afirmação diagnóstica absoluta
-- Preservar sinais técnicos entre aspas tal como nos chips, mantendo formato bilíngue: "termo PT" ("termo EN")
-- Mesclar coerentemente chips + texto + voz. Priorizar o mais específico em caso de conflito
+- TODAS as janelas recebidas devem aparecer nos achados
+- Nunca escrever "não avaliada" ou inventar achados
+- Linguagem comedida: "sugestivo de", "compatível com". Nunca afirmação diagnóstica absoluta
+- Preservar sinais técnicos entre aspas, formato bilíngue: "sinal A" ("A-line")
+- Mesclar chips + texto + voz. Priorizar o mais específico
 
 Retorne APENAS JSON válido: { "extenso": "...", "objetivo": "..." }`;
 

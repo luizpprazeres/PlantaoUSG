@@ -13,6 +13,7 @@ export interface Aula {
   id: string;
   titulo: string;
   conteudo: string; // markdown
+  esquemaHtml?: string; // HTML simples para diagrama/tabela
   duracaoMin: number;
   questoes: QuestaoAula[];
 }

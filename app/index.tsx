@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
-import { Calculator } from 'lucide-react-native';
+import { Calculator, MessageCircle } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
@@ -97,20 +97,14 @@ export default function HomeScreen() {
           <TouchableOpacity onPress={() => router.push('/historico')}>
             <Text style={styles.navLink}>HISTÓRICO</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/tira-duvidas')}>
-            <Text style={styles.navLink}>DÚVIDAS</Text>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/progresso')}>
-            <Text style={styles.navLink}>PROGRESSO</Text>
-          </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push('/videos')}>
             <Text style={styles.navLink}>VÍDEOS</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => router.push('/curso')}>
             <Text style={styles.navLink}>CURSO</Text>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => router.push('/sobre')}>
-            <Text style={styles.navLink}>SOBRE</Text>
+          <TouchableOpacity onPress={() => router.push('/preferencias')}>
+            <Text style={styles.navLink}>PREF.</Text>
           </TouchableOpacity>
         </View>
 
@@ -140,15 +134,22 @@ export default function HomeScreen() {
           ))}
         </View>
 
-        <Pressable style={styles.calcCard} onPress={() => router.push('/calculadoras')}>
-          <View style={styles.calcCardInner}>
-            <Calculator size={16} color={Colors.textMuted} style={styles.calcIcon} />
-            <View>
-              <Text style={styles.calcCardNome}>CALCULADORAS</Text>
-              <Text style={styles.calcCardDesc}>Índice de choque, PAM, qSOFA, débito cardíaco...</Text>
+        <View style={styles.bottomRow}>
+          <Pressable style={styles.bottomCard} onPress={() => router.push('/calculadoras')}>
+            <Calculator size={15} color={Colors.textMuted} />
+            <View style={styles.bottomCardText}>
+              <Text style={styles.bottomCardNome}>CALCULADORAS</Text>
+              <Text style={styles.bottomCardDesc}>PAM, qSOFA, débito cardíaco...</Text>
             </View>
-          </View>
-        </Pressable>
+          </Pressable>
+          <Pressable style={styles.bottomCard} onPress={() => router.push('/tira-duvidas')}>
+            <MessageCircle size={15} color={Colors.textMuted} />
+            <View style={styles.bottomCardText}>
+              <Text style={styles.bottomCardNome}>DÚVIDAS</Text>
+              <Text style={styles.bottomCardDesc}>POCUS · AI</Text>
+            </View>
+          </Pressable>
+        </View>
 
         <FunilFooter posicao="home" copy="Parceria LaudoUSG →" />
       </ScrollView>
@@ -202,30 +203,29 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.base,
   },
   row: { flexDirection: 'row' },
-  calcCard: {
+  bottomRow: {
+    flexDirection: 'row',
     marginHorizontal: Spacing.base,
     marginTop: Spacing.base,
-    borderWidth: 1,
-    borderColor: '#2A2A2A',
-    backgroundColor: Colors.bgElevated,
-    padding: Spacing.base,
+    gap: Spacing.sm,
   },
-  calcCardInner: {
+  bottomCard: {
+    flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: Spacing.md,
+    gap: Spacing.sm,
+    backgroundColor: Colors.bgElevated,
+    padding: Spacing.md,
   },
-  calcIcon: {
-    marginRight: 4,
-  },
-  calcCardNome: {
+  bottomCardText: { flex: 1 },
+  bottomCardNome: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.label,
+    fontSize: FontSize.caption,
     color: Colors.textPrimary,
     letterSpacing: 0.5,
-    marginBottom: 4,
+    marginBottom: 2,
   },
-  calcCardDesc: {
+  bottomCardDesc: {
     fontFamily: 'IBMPlexMono_400Regular',
     fontSize: 10,
     color: Colors.textSecondary,

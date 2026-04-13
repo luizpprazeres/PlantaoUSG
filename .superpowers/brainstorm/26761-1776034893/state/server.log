@@ -1,0 +1,4 @@
+{"type":"server-started","port":57754,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:57754","screen_dir":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/26761-1776034893/content","state_dir":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/26761-1776034893/state"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/26761-1776034893/content/laudador-ux.html"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/26761-1776034893/content/sheet-flow.html"}
+{"type":"server-stopped","reason":"idle timeout"}

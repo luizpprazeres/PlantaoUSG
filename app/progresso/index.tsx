@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, CheckCircle, Circle, Award, Lock } from 'lucide-react-native';
 import { useEstatisticas } from '@/hooks/useEstatisticas';
 import { MARCOS, CERTIFICADOS } from '@/utils/marcos';
-import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
+import { Colors, FontSize, Spacing } from '@/constants/theme';
 
 const PROTOCOLO_LABELS: Record<string, string> = {
   efast: 'eFAST',

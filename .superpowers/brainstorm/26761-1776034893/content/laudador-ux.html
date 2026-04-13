@@ -1,0 +1,137 @@
+<h2>UX do Laudador — Comparação de abordagens</h2>
+<p class="subtitle">Como o médico registra achados? Escolha a direção que faz mais sentido clinicamente.</p>
+
+<div class="cards">
+
+  <!-- OPÇÃO A: ATUAL -->
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#000;padding:16px;font-family:monospace;border-bottom:1px solid #1a1a1a;min-height:280px;">
+      <div style="color:#555;font-size:9px;letter-spacing:2px;margin-bottom:10px;">ATUAL</div>
+
+      <!-- JanelaBlock -->
+      <div style="border-bottom:1px solid #111;padding-bottom:10px;margin-bottom:8px;">
+        <div style="display:flex;justify-content:space-between;">
+          <span style="color:#fff;font-size:11px;">QSD (Morrison)</span>
+          <span style="color:#333;font-size:10px;">▾</span>
+        </div>
+        <div style="margin-top:8px;display:flex;flex-wrap:wrap;gap:4px;">
+          <span style="background:#141414;color:#666;font-size:9px;padding:4px 8px;border-radius:2px;">Sem líquido livre</span>
+          <span style="background:#141414;color:#666;font-size:9px;padding:4px 8px;border-radius:2px;">Recesso subfrênico normal</span>
+          <span style="background:#fff;color:#000;font-size:9px;padding:4px 8px;border-radius:2px;">↑ Lâmina fina de líquido livre</span>
+          <span style="background:#141414;color:#666;font-size:9px;padding:4px 8px;border-radius:2px;">Moderada quantidade</span>
+          <span style="background:#141414;color:#666;font-size:9px;padding:4px 8px;border-radius:2px;">Volumoso líquido</span>
+        </div>
+      </div>
+
+      <!-- Limitações -->
+      <div style="margin-top:8px;">
+        <div style="color:#333;font-size:8px;letter-spacing:2px;margin-bottom:6px;">LIMITAÇÕES TÉCNICAS</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+          <span style="background:#141414;color:#444;font-size:9px;padding:4px 8px;border-radius:2px;">Obesidade</span>
+          <span style="background:#141414;color:#444;font-size:9px;padding:4px 8px;border-radius:2px;">Enfisema subcutâneo</span>
+          <span style="background:#141414;color:#444;font-size:9px;padding:4px 8px;border-radius:2px;">Curativo</span>
+        </div>
+      </div>
+
+      <div style="color:#333;font-size:8px;margin-top:12px;">Problema: mistura normal + alterado na mesma lista</div>
+    </div>
+    <div class="card-body">
+      <h3>A — Atual (chips mistos)</h3>
+      <p>Normal e Alterado lado a lado. Usuário precisa rolar, abrir seções, e escolher entre muitas opções. Mais cliques, mais confusão.</p>
+    </div>
+  </div>
+
+  <!-- OPÇÃO B: SÓ ALTERADOS + ASSUME NORMAL -->
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#000;padding:16px;font-family:monospace;border-bottom:1px solid #1a1a1a;min-height:280px;">
+      <div style="color:#555;font-size:9px;letter-spacing:2px;margin-bottom:10px;">NOVO — SÓ ALTERADOS</div>
+
+      <!-- Janelas como botões rápidos -->
+      <div style="margin-bottom:10px;">
+        <div style="color:#333;font-size:8px;letter-spacing:2px;margin-bottom:6px;">JANELAS</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">
+          <div style="background:#0a0a0a;border:1px solid #2a2a2a;border-radius:4px;padding:8px;">
+            <div style="color:#fff;font-size:10px;margin-bottom:4px;">QSD (Morrison)</div>
+            <div style="display:flex;flex-wrap:wrap;gap:3px;">
+              <span style="background:#fff;color:#000;font-size:8px;padding:3px 6px;border-radius:2px;">Lâmina fina ✓</span>
+            </div>
+          </div>
+          <div style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:4px;padding:8px;">
+            <div style="color:#444;font-size:10px;margin-bottom:4px;">QSE (Esplenorrenal)</div>
+            <div style="color:#222;font-size:8px;">normal →</div>
+          </div>
+          <div style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:4px;padding:8px;">
+            <div style="color:#444;font-size:10px;margin-bottom:4px;">Suprapúbica</div>
+            <div style="color:#222;font-size:8px;">normal →</div>
+          </div>
+          <div style="background:#0a0a0a;border:1px solid #1a1a1a;border-radius:4px;padding:8px;">
+            <div style="color:#444;font-size:10px;margin-bottom:4px;">Pleural D</div>
+            <div style="color:#222;font-size:8px;">normal →</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Limitações como dropdown -->
+      <div style="border:1px solid #1a1a1a;border-radius:4px;padding:8px;margin-top:6px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:9px;letter-spacing:2px;">LIMITAÇÕES TÉCNICAS</span>
+          <span style="color:#333;font-size:10px;">▾</span>
+        </div>
+        <div style="margin-top:6px;color:#444;font-size:8px;">Nenhuma selecionada</div>
+      </div>
+
+      <div style="color:#333;font-size:8px;margin-top:10px;">Janelas sem seleção = normal no laudo automaticamente</div>
+    </div>
+    <div class="card-body">
+      <h3>B — Só alterados + normal por omissão</h3>
+      <p>Cada janela é um card. Clicou = abre só opções alteradas. Sem seleção = laudo assume normal. Limitações em dropdown. Menos scroll, menos cliques.</p>
+    </div>
+  </div>
+
+  <!-- OPÇÃO C: TWO-STEP SELECT -->
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#000;padding:16px;font-family:monospace;border-bottom:1px solid #1a1a1a;min-height:280px;">
+      <div style="color:#555;font-size:9px;letter-spacing:2px;margin-bottom:10px;">NOVO — SELEÇÃO 2 NÍVEIS</div>
+
+      <!-- Lista de janelas como linhas -->
+      <div style="margin-bottom:10px;">
+        <div style="border-bottom:1px solid #111;padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#fff;font-size:11px;">QSD (Morrison)</span>
+          <div style="display:flex;gap:4px;">
+            <span style="background:#fff;color:#000;font-size:8px;padding:2px 6px;border-radius:2px;">Lâmina fina</span>
+            <span style="color:#fff;font-size:10px;">×</span>
+          </div>
+        </div>
+        <div style="border-bottom:1px solid #111;padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">QSE (Esplenorrenal)</span>
+          <span style="color:#1a1a1a;font-size:9px;">toque p/ alterar</span>
+        </div>
+        <div style="border-bottom:1px solid #111;padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">Suprapúbica</span>
+          <span style="color:#1a1a1a;font-size:9px;">toque p/ alterar</span>
+        </div>
+        <div style="border-bottom:1px solid #111;padding:8px 0;display:flex;justify-content:space-between;align-items:center;">
+          <span style="color:#333;font-size:11px;">Pleural Direito</span>
+          <span style="color:#1a1a1a;font-size:9px;">toque p/ alterar</span>
+        </div>
+      </div>
+
+      <!-- Sheet que aparece ao tocar -->
+      <div style="background:#0d0d0d;border:1px solid #222;border-radius:6px;padding:10px;margin-top:4px;">
+        <div style="color:#666;font-size:8px;letter-spacing:2px;margin-bottom:6px;">↑ AO TOCAR UMA JANELA, ABRE:</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px;">
+          <span style="background:#141414;color:#666;font-size:8px;padding:3px 6px;border-radius:2px;">Lâmina fina</span>
+          <span style="background:#141414;color:#666;font-size:8px;padding:3px 6px;border-radius:2px;">Moderada qtd.</span>
+          <span style="background:#141414;color:#666;font-size:8px;padding:3px 6px;border-radius:2px;">Volumoso</span>
+          <span style="background:#141414;color:#666;font-size:8px;padding:3px 6px;border-radius:2px;">Hemático</span>
+        </div>
+        <div style="color:#222;font-size:8px;margin-top:6px;">Escolheu → fecha sheet → janela marca como alterada</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C — Lista de janelas + sheet de opções</h3>
+      <p>Janelas em lista compacta. Toque numa linha → abre bottom sheet com só os achados alterados. Fecha ao selecionar. Fluxo: toque → escolha → pronto.</p>
+    </div>
+  </div>
+
+</div>

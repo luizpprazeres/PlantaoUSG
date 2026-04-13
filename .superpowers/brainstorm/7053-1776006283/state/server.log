@@ -1,0 +1,9 @@
+{"type":"server-started","port":58305,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:58305","screen_dir":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content","state_dir":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/state"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content/direcao.html"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content/waiting.html"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content/icones-estilo.html"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content/waiting-2.html"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content/home-mockup.html"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content/home-mockup-v2.html"}
+{"type":"screen-added","file":"/Users/luizprazeres/PlantaoUSG/plantao-usg/.superpowers/brainstorm/7053-1776006283/content/waiting-3.html"}
+{"type":"server-stopped","reason":"idle timeout"}
