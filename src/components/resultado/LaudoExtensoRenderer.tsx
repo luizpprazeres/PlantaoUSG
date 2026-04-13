@@ -18,28 +18,34 @@ function parseExtenso(text: string): Section[] {
   const HEADERS = ['TÉCNICA', 'ACHADOS', 'IMPRESSÃO', 'REFERÊNCIAS'];
   const sections: Section[] = [];
 
-  // Normalizar quebras de linha
-  const normalized = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+  const lines = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n').split('\n');
 
-  // Split por header conhecido (case-insensitive)
-  const regex = new RegExp(`(${HEADERS.join('|')}):?`, 'gi');
-  const parts = normalized.split(regex);
+  let currentHeader: string | null = null;
+  let currentLines: string[] = [];
 
-  let i = 0;
-  while (i < parts.length) {
-    const part = parts[i].trim();
-    const isHeader = HEADERS.some(h => h.toLowerCase() === part.toLowerCase());
-    if (isHeader && i + 1 < parts.length) {
-      const content = parts[i + 1];
-      const lines = content
-        .split('\n')
-        .map(l => l.trim())
-        .filter(Boolean);
-      sections.push({ header: part.toUpperCase(), lines });
-      i += 2;
-    } else {
-      i += 1;
+  for (const line of lines) {
+    const trimmed = line.trim();
+    // Header só reconhecido no início da linha (linha inteira OU "HEADER: conteúdo")
+    const matchedHeader = HEADERS.find(h => {
+      const upper = trimmed.toUpperCase();
+      return upper === h || upper.startsWith(`${h}:`) || upper.startsWith(`${h} `);
+    });
+
+    if (matchedHeader) {
+      if (currentHeader !== null) {
+        sections.push({ header: currentHeader, lines: currentLines });
+      }
+      currentHeader = matchedHeader;
+      // Conteúdo após o header na mesma linha (ex: "TÉCNICA: Transdutor...")
+      const afterHeader = trimmed.slice(matchedHeader.length).replace(/^:\s*/, '').trim();
+      currentLines = afterHeader ? [afterHeader] : [];
+    } else if (currentHeader !== null && trimmed) {
+      currentLines.push(trimmed);
     }
+  }
+
+  if (currentHeader !== null) {
+    sections.push({ header: currentHeader, lines: currentLines });
   }
 
   return sections;
