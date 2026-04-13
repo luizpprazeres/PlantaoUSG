@@ -82,10 +82,10 @@ export default function LaudadorScreen() {
         .filter((l) => limitacoesSelecionadas.includes(l.id))
         .map((l) => l.label);
 
-      const resultado = await gerarLaudo(protocolo.nomeCompleto, {
+      const resultado = await gerarLaudo({
         protocolo: protocolo.nomeCompleto,
         transdutor: protocolo.transdutor,
-        janelasComInput,
+        janelas: janelasComInput,
         observacoes,
         limitacoes,
       });

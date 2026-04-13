@@ -22,13 +22,12 @@ export interface LaudoGerado {
 }
 
 export async function gerarLaudo(
-  protocolo: string,
   inputBruto: InputBruto
 ): Promise<LaudoGerado> {
   const response = await fetch(`${API_URL}/api/gerar-laudo`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ protocolo, inputBruto }),
+    body: JSON.stringify({ protocolo: inputBruto.protocolo, inputBruto }),
   });
 
   if (!response.ok) {
