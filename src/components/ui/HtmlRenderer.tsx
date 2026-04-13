@@ -3,7 +3,7 @@
  * Suporta: p, strong, em, br, table, tr, td, th, div, h1-h4, ul, li.
  * Não usa WebView — parse manual de tags.
  */
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 
 interface HtmlRendererProps {
   html: string;
@@ -175,17 +175,25 @@ function RenderNodes({ nodes }: { nodes: RenderNode[] }): React.ReactElement {
 
     if (node.kind === 'table') {
       elements.push(
-        <View key={i} style={s.table}>
-          {node.rows.map((row, ri) => (
-            <View key={ri} style={[s.tableRow, row.isHeader && s.tableHeaderRow]}>
-              {row.cells.map((cell, ci) => (
-                <View key={ci} style={s.tableCell}>
-                  <RenderNodes nodes={cell} />
-                </View>
-              ))}
-            </View>
-          ))}
-        </View>
+        <ScrollView
+          key={i}
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          nestedScrollEnabled
+          style={s.tableScroll}
+        >
+          <View style={s.table}>
+            {node.rows.map((row, ri) => (
+              <View key={ri} style={[s.tableRow, row.isHeader && s.tableHeaderRow]}>
+                {row.cells.map((cell, ci) => (
+                  <View key={ci} style={s.tableCell}>
+                    <RenderNodes nodes={cell} />
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       );
       continue;
     }
@@ -287,10 +295,12 @@ const s = StyleSheet.create({
     lineHeight: 20,
     flex: 1,
   },
+  tableScroll: {
+    marginVertical: 12,
+  },
   table: {
     borderWidth: 1,
     borderColor: '#e0e0e0',
-    marginVertical: 12,
   },
   tableRow: {
     flexDirection: 'row',
@@ -301,7 +311,7 @@ const s = StyleSheet.create({
     backgroundColor: '#f5f5f5',
   },
   tableCell: {
-    flex: 1,
+    minWidth: 100,
     padding: 8,
     borderRightWidth: 1,
     borderRightColor: '#e0e0e0',

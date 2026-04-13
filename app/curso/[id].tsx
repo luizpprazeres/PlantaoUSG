@@ -333,16 +333,19 @@ const s = StyleSheet.create({
   esquemaContainer: {
     borderWidth: 1,
     borderColor: C.border,
-    padding: 16,
+    paddingTop: 12,
+    paddingBottom: 4,
     marginBottom: 24,
     backgroundColor: '#FAFAFA',
+    overflow: 'hidden',
   },
   esquemaLabel: {
     fontFamily: 'IBMPlexMono_700Bold',
     fontSize: 10,
     color: C.textMuted,
     letterSpacing: 1.5,
-    marginBottom: 12,
+    marginBottom: 8,
+    paddingHorizontal: 16,
   },
 
   // Quiz header
