@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Pressable } from 'react-native';
+import { Calculator } from 'lucide-react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Animated, {
@@ -16,11 +17,9 @@ import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { Analytics } from '@/utils/analytics';
 import { useLaudadorStore } from '@/stores/laudadorStore';
 
-const DISPONIVEIS = ['efast', 'blue'];
+const DISPONIVEIS = ['efast', 'blue', 'rush', 'cardiac', 'vexus'];
 
 const PLACEHOLDER_PROTOCOLOS = [
-  { id: 'cardiaco', nome: 'Cardíaco', indicacao: 'Função ventricular, câmaras, pericárdio', categoria: 'CARDÍACO' },
-  { id: 'rush', nome: 'Protocolo RUSH', indicacao: 'Choque indiferenciado — avaliação integrada cardíaca, pulmonar e vascular', categoria: 'CHOQUE' },
   { id: 'vascular2', nome: 'Vascular', indicacao: 'Aorta abdominal, veia cava, vasos periféricos', categoria: 'VASCULAR' },
   { id: 'acessos', nome: 'Acessos guiados', indicacao: 'VJI, subclávia, femoral, artéria radial', categoria: 'ACESSO' },
 ];
@@ -127,6 +126,16 @@ export default function HomeScreen() {
           ))}
         </View>
 
+        <Pressable style={styles.calcCard} onPress={() => router.push('/calculadoras')}>
+          <View style={styles.calcCardInner}>
+            <Calculator size={16} color={Colors.textMuted} style={styles.calcIcon} />
+            <View>
+              <Text style={styles.calcCardNome}>CALCULADORAS</Text>
+              <Text style={styles.calcCardDesc}>Índice de choque, PAM, qSOFA, débito cardíaco...</Text>
+            </View>
+          </View>
+        </Pressable>
+
         <FunilFooter posicao="home" copy="Parceria LaudoUSG →" />
       </ScrollView>
     </SafeAreaView>
@@ -179,4 +188,33 @@ const styles = StyleSheet.create({
     paddingTop: Spacing.base,
   },
   row: { flexDirection: 'row' },
+  calcCard: {
+    marginHorizontal: Spacing.base,
+    marginTop: Spacing.base,
+    borderWidth: 1,
+    borderColor: '#2A2A2A',
+    backgroundColor: Colors.bgElevated,
+    padding: Spacing.base,
+  },
+  calcCardInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+  },
+  calcIcon: {
+    marginRight: 4,
+  },
+  calcCardNome: {
+    fontFamily: 'IBMPlexMono_700Bold',
+    fontSize: FontSize.label,
+    color: Colors.textPrimary,
+    letterSpacing: 0.5,
+    marginBottom: 4,
+  },
+  calcCardDesc: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: 10,
+    color: Colors.textSecondary,
+    lineHeight: 16,
+  },
 });
