@@ -14,10 +14,15 @@ export function JanelaRow({ janela, selecionados, onPress, onRemoveAchado }: Jan
 
   return (
     <TouchableOpacity style={styles.row} onPress={onPress} activeOpacity={0.7}>
-      <Text style={styles.nome}>{janela.nome}</Text>
+      <Text style={styles.nome}>
+        {selecionados.length > 0 && (
+          <Text style={styles.indicator}>● </Text>
+        )}
+        {janela.nome}
+      </Text>
       <View style={styles.tagsContainer}>
         {selecionados.length === 0 ? (
-          <Text style={styles.semAlteracao}>sem alteração</Text>
+          <Text style={styles.semAlteracao}>—</Text>
         ) : (
           selecionados.map((achadoId) => {
             const achado = allAchados.find((a) => a.id === achadoId);
@@ -61,6 +66,10 @@ const styles = StyleSheet.create({
     flex: 1,
     marginRight: Spacing.sm,
     paddingTop: 2,
+  },
+  indicator: {
+    color: Colors.emergencyRed,
+    fontFamily: 'IBMPlexMono_600SemiBold',
   },
   tagsContainer: {
     flex: 1.2,
