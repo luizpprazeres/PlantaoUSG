@@ -29,10 +29,10 @@ export function JanelaRow({ janela, selecionados, onPress, onRemoveAchado }: Jan
                 </Text>
                 <TouchableOpacity
                   style={styles.removeBtn}
-                  onPress={(e) => {
-                    e.stopPropagation?.();
+                  onPress={() => {
                     onRemoveAchado(achadoId);
                   }}
+                  activeOpacity={0.6}
                   hitSlop={{ top: 8, bottom: 8, left: 4, right: 8 }}
                 >
                   <Text style={styles.removeText}>×</Text>
@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
     backgroundColor: Colors.textPrimary,
     borderRadius: Radius.micro,
     paddingHorizontal: Spacing.sm,
-    paddingVertical: 3,
+    paddingVertical: Spacing.xs,
     marginLeft: Spacing.xs,
     marginBottom: Spacing.xs,
     maxWidth: 180,
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   removeBtn: {
-    marginLeft: 4,
+    marginLeft: Spacing.xs,
   },
   removeText: {
     fontFamily: 'IBMPlexMono_500Medium',
