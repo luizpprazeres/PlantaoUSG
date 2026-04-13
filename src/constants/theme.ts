@@ -8,6 +8,7 @@ export const Colors = {
   textSecondary: '#A3A3A3',
   textMuted: '#525252',
   accent: '#FFFFFF',
+  emergencyRed: '#C62828',
 } as const;
 
 export const FontSize = {

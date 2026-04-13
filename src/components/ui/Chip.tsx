@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { TouchableOpacity, Text, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
   withSequence,
   withTiming,
+  interpolateColor,
 } from 'react-native-reanimated';
 import * as Haptics from 'expo-haptics';
 import { Colors, Spacing, FontSize, Radius } from '@/constants/theme';
@@ -18,9 +20,25 @@ interface ChipProps {
 
 export function Chip({ label, selected, onPress }: ChipProps) {
   const scale = useSharedValue(1);
+  const progress = useSharedValue(selected ? 1 : 0);
+
+  useEffect(() => {
+    progress.value = withTiming(selected ? 1 : 0, { duration: 120 });
+  }, [selected]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
+    borderWidth: 1,
+    borderColor: interpolateColor(
+      progress.value,
+      [0, 1],
+      ['#2A2A2A', Colors.emergencyRed]
+    ),
+    backgroundColor: interpolateColor(
+      progress.value,
+      [0, 1],
+      [Colors.bgInput, '#1A0000']
+    ),
   }));
 
   const handlePress = () => {
@@ -34,7 +52,7 @@ export function Chip({ label, selected, onPress }: ChipProps) {
 
   return (
     <AnimatedTouchable
-      style={[styles.chip, selected && styles.chipSelected, animatedStyle]}
+      style={[styles.chip, animatedStyle]}
       onPress={handlePress}
       activeOpacity={1}
     >
@@ -49,13 +67,9 @@ const styles = StyleSheet.create({
   chip: {
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.sm,
-    backgroundColor: Colors.bgInput,
     borderRadius: Radius.micro,
     marginRight: Spacing.sm,
     marginBottom: Spacing.sm,
-  },
-  chipSelected: {
-    backgroundColor: Colors.accent,
   },
   label: {
     fontFamily: 'IBMPlexMono_400Regular',
@@ -64,7 +78,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.04 * FontSize.caption,
   },
   labelSelected: {
-    color: Colors.bgPrimary,
+    color: Colors.textPrimary,
     fontFamily: 'IBMPlexMono_500Medium',
   },
 });
