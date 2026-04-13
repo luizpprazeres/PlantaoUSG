@@ -1,11 +1,12 @@
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Linking } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Linking, TextInput } from 'react-native';
 import { router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 import { FunilFooter } from '@/components/ui/FunilFooter';
-import { Colors, FontSize, Spacing } from '@/constants/theme';
+import { Colors, FontSize, Spacing, Radius } from '@/constants/theme';
 import { useTextCase } from '@/hooks/useTextCase';
 import { useTextSize } from '@/hooks/useTextSize';
+import { useMedico } from '@/hooks/useMedico';
 
 const REFERENCIAS = [
   'Volpicelli G. et al. International evidence-based recommendations for point-of-care lung ultrasound. Intensive Care Medicine. 2012',
@@ -18,6 +19,7 @@ const REFERENCIAS = [
 export default function SobreScreen() {
   const { mode, toggle } = useTextCase();
   const { mode: textSizeMode, cycle: cycleTextSize } = useTextSize();
+  const { medico, atualizar } = useMedico();
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -32,6 +34,54 @@ export default function SobreScreen() {
       <ScrollView contentContainerStyle={styles.scroll}>
         <Text style={styles.nome}>Plantão USG</Text>
         <Text style={styles.tagline}>Seu parceiro de ultrassom no plantão.</Text>
+
+        <Text style={styles.sectionLabel}>IDENTIFICAÇÃO MÉDICA</Text>
+        <Text style={styles.perfilHint}>Usado no cabeçalho do PDF exportado.</Text>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Nome</Text>
+          <TextInput
+            style={styles.input}
+            value={medico.nome}
+            onChangeText={(v) => atualizar('nome', v)}
+            placeholder="Dr(a). Nome Completo"
+            placeholderTextColor={Colors.textMuted}
+            autoCapitalize="words"
+          />
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>CRM</Text>
+          <View style={styles.crmRow}>
+            <TextInput
+              style={[styles.input, styles.crmNumero]}
+              value={medico.crm}
+              onChangeText={(v) => atualizar('crm', v.replace(/\D/g, ''))}
+              placeholder="123456"
+              placeholderTextColor={Colors.textMuted}
+              keyboardType="numeric"
+              maxLength={7}
+            />
+            <TextInput
+              style={[styles.input, styles.crmEstado]}
+              value={medico.crmEstado}
+              onChangeText={(v) => atualizar('crmEstado', v.toUpperCase().slice(0, 2))}
+              placeholder="SP"
+              placeholderTextColor={Colors.textMuted}
+              autoCapitalize="characters"
+              maxLength={2}
+            />
+          </View>
+        </View>
+        <View style={styles.inputRow}>
+          <Text style={styles.inputLabel}>Especialidade</Text>
+          <TextInput
+            style={styles.input}
+            value={medico.especialidade}
+            onChangeText={(v) => atualizar('especialidade', v)}
+            placeholder="Medicina de Emergência"
+            placeholderTextColor={Colors.textMuted}
+            autoCapitalize="words"
+          />
+        </View>
 
         <Text style={styles.sectionLabel}>PREFERÊNCIAS</Text>
         <TouchableOpacity onPress={toggle} style={styles.prefRow}>
@@ -136,6 +186,40 @@ const styles = StyleSheet.create({
     lineHeight: FontSize.caption * 1.8,
     marginBottom: Spacing.xs,
   },
+  perfilHint: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: FontSize.caption,
+    color: Colors.textMuted,
+    marginBottom: Spacing.sm,
+  },
+  inputRow: {
+    marginBottom: Spacing.sm,
+  },
+  inputLabel: {
+    fontFamily: 'IBMPlexMono_500Medium',
+    fontSize: FontSize.caption,
+    color: Colors.textMuted,
+    marginBottom: 4,
+    letterSpacing: 0.04,
+  },
+  input: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: FontSize.label,
+    color: Colors.textPrimary,
+    backgroundColor: Colors.bgInput,
+    borderWidth: 1,
+    borderColor: Colors.borderSubtle,
+    borderRadius: Radius.sm,
+    paddingHorizontal: Spacing.md,
+    paddingVertical: Spacing.sm,
+    flex: 1,
+  },
+  crmRow: {
+    flexDirection: 'row',
+    gap: Spacing.sm,
+  },
+  crmNumero: { flex: 3 },
+  crmEstado: { flex: 1, textAlign: 'center' },
   prefRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',

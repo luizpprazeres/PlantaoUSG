@@ -12,7 +12,10 @@ import {
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import * as Clipboard from 'expo-clipboard';
-import { ArrowLeft, Copy, Share2 } from 'lucide-react-native';
+import { ArrowLeft, Copy, Share2, FileDown } from 'lucide-react-native';
+import { exportarPDF } from '@/utils/gerarPDF';
+import { useMedico } from '@/hooks/useMedico';
+import { PROTOCOLO_MAP } from '@/data/protocolos';
 import { TypewriterText } from '@/components/ui/TypewriterText';
 import { LaudoExtensoRenderer } from '@/components/resultado/LaudoExtensoRenderer';
 import { FunilFooter } from '@/components/ui/FunilFooter';
@@ -39,6 +42,8 @@ export default function ResultadoScreen() {
     useLaudadorStore();
   const { mode: textCaseMode } = useTextCase();
   const { fontSize } = useTextSize();
+  const { medico } = useMedico();
+  const [exportando, setExportando] = useState(false);
 
   const textoRaw = aba === 'extenso' ? (params.extenso ?? '') : (params.objetivo ?? '');
   const texto = applyTextCase(textoRaw, textCaseMode);
@@ -58,6 +63,25 @@ export default function ResultadoScreen() {
       await Share.share({ message: texto });
     } catch {
       // usuário cancelou ou erro — ignorar silenciosamente
+    }
+  };
+
+  const exportarPDFLaudo = async () => {
+    if (exportando) return;
+    setExportando(true);
+    try {
+      const nomeProtocolo =
+        PROTOCOLO_MAP[params.protocoloId ?? '']?.nome ?? params.protocoloId ?? 'POCUS';
+      await exportarPDF(
+        params.extenso ?? '',
+        params.objetivo ?? '',
+        nomeProtocolo,
+        medico
+      );
+    } catch (err) {
+      Alert.alert('Erro', `Não foi possível gerar o PDF: ${(err as Error).message}`);
+    } finally {
+      setExportando(false);
     }
   };
 
@@ -100,6 +124,13 @@ export default function ResultadoScreen() {
           </TouchableOpacity>
           <TouchableOpacity onPress={compartilhar} style={styles.actionBtn}>
             <Share2 size={20} color={Colors.textSecondary} />
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={exportarPDFLaudo}
+            style={styles.actionBtn}
+            disabled={exportando}
+          >
+            <FileDown size={20} color={exportando ? Colors.textMuted : Colors.textSecondary} />
           </TouchableOpacity>
         </View>
       </View>
