@@ -245,7 +245,7 @@ export function HtmlRenderer({ html, style }: HtmlRendererProps) {
 const s = StyleSheet.create({
   text: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: 12,
+    fontSize: 13,
     color: '#1a1a1a',
     lineHeight: 20,
   },
@@ -257,9 +257,9 @@ const s = StyleSheet.create({
   },
   paragraph: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: 12,
+    fontSize: 13,
     color: '#1a1a1a',
-    lineHeight: 20,
+    lineHeight: 22,
     marginBottom: 8,
   },
   h2: {
@@ -284,15 +284,15 @@ const s = StyleSheet.create({
   },
   liDot: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: 12,
+    fontSize: 13,
     color: '#555',
-    lineHeight: 20,
+    lineHeight: 22,
   },
   liText: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: 12,
+    fontSize: 13,
     color: '#1a1a1a',
-    lineHeight: 20,
+    lineHeight: 22,
     flex: 1,
   },
   tableScroll: {

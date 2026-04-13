@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, StatusBar,
 } from 'react-native';
+import * as Haptics from 'expo-haptics';
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react-native';
@@ -42,7 +43,13 @@ function QuizQuestao({
   const handleSeleção = (idx: number) => {
     if (respondido) return;
     setSelecionado(idx);
-    onResponder(idx === questao.correta);
+    const acertou = idx === questao.correta;
+    if (acertou) {
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    } else {
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+    }
+    onResponder(acertou);
   };
 
   return (
@@ -97,6 +104,8 @@ export default function CursoModuloScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const modulo = MODULO_MAP[id ?? ''];
 
+  const scrollRef = useRef<ScrollView>(null);
+
   const [aulaIdx, setAulaIdx] = useState(0);
   const [fase, setFase] = useState<FaseAula>('conteudo');
   const [acertosTotal, setAcertosTotal] = useState(0);
@@ -114,24 +123,43 @@ export default function CursoModuloScreen() {
   const aula: Aula = modulo.aulas[aulaIdx];
   const totalAulas = modulo.aulas.length;
   const questao = aula.questoes[questaoIdx];
-  const progressoPct = (aulaIdx / totalAulas) * 100;
+  const totalQuestoesAula = aula.questoes.length;
+
+  // Progresso composto: aulas concluídas + posição dentro da aula atual
+  const progressoPct = (() => {
+    const aulaPct = 1 / totalAulas;
+    const base = aulaIdx * aulaPct;
+    if (fase === 'conteudo') return base * 100;
+    if (fase === 'quiz') return (base + (questaoIdx / totalQuestoesAula) * aulaPct) * 100;
+    return (base + aulaPct) * 100;
+  })();
+
+  const scrollToTop = () => scrollRef.current?.scrollTo({ y: 0, animated: false });
 
   const handleResponder = (correta: boolean) => {
     const novasRespostas = [...respostas, correta];
     setRespostas(novasRespostas);
     if (correta) setAcertosTotal((a) => a + 1);
 
+    // scroll para mostrar a explicação
+    setTimeout(() => {
+      scrollRef.current?.scrollToEnd({ animated: true });
+    }, 150);
+
     setTimeout(() => {
       const proxima = questaoIdx + 1;
       if (proxima < aula.questoes.length) {
         setQuestaoIdx(proxima);
+        scrollToTop();
       } else {
         setFase('resultado');
+        scrollToTop();
       }
     }, 1400);
   };
 
   const proximaAula = () => {
+    scrollToTop();
     if (aulaIdx + 1 < totalAulas) {
       setAulaIdx((i) => i + 1);
       setFase('conteudo');
@@ -149,7 +177,6 @@ export default function CursoModuloScreen() {
   };
 
   const acertosAula = respostas.filter(Boolean).length;
-  const totalQuestoesAula = aula.questoes.length;
 
   return (
     <SafeAreaView style={s.safe} edges={['top']}>
@@ -173,6 +200,7 @@ export default function CursoModuloScreen() {
       </View>
 
       <ScrollView
+        ref={scrollRef}
         contentContainerStyle={s.scroll}
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
@@ -197,7 +225,7 @@ export default function CursoModuloScreen() {
               </View>
             )}
 
-            <TouchableOpacity style={s.btnPrimario} onPress={() => setFase('quiz')} activeOpacity={0.85}>
+            <TouchableOpacity style={s.btnPrimario} onPress={() => { scrollToTop(); setFase('quiz'); }} activeOpacity={0.85}>
               <Text style={s.btnPrimarioText}>INICIAR QUIZ</Text>
               <ArrowRight size={16} color={C.accentText} />
             </TouchableOpacity>
@@ -302,8 +330,8 @@ const s = StyleSheet.create({
   },
 
   // Progress
-  progressTrack: { height: 3, backgroundColor: C.border },
-  progressFill: { height: 3, backgroundColor: C.progress },
+  progressTrack: { height: 6, backgroundColor: C.border },
+  progressFill: { height: 6, backgroundColor: C.progress },
 
   // Scroll
   scroll: {
@@ -421,9 +449,9 @@ const s = StyleSheet.create({
   },
   explicacaoText: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: 12,
+    fontSize: 13,
     color: C.textSub,
-    lineHeight: 20,
+    lineHeight: 22,
   },
 
   // Resultado
