@@ -4,13 +4,14 @@ const API_URL =
   (Constants.expoConfig?.extra?.apiUrl as string | undefined) ??
   'http://localhost:3000';
 
+export type JanelaPayload =
+  | { nome: string; achados: string[] }
+  | { nome: string; status: 'normal' };
+
 export interface InputBruto {
   protocolo: string;
   transdutor: string;
-  janelasComInput: Array<{
-    nome: string;
-    achados: string[];
-  }>;
+  janelas: JanelaPayload[];
   observacoes: string;
   limitacoes: string[];
 }
