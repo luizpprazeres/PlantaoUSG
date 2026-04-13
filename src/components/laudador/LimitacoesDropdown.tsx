@@ -3,9 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withTiming,
+  withSpring,
+  interpolate,
+  Extrapolation,
 } from 'react-native-reanimated';
-import { ChevronDown, ChevronUp } from 'lucide-react-native';
+import { ChevronDown } from 'lucide-react-native';
 import { Chip } from '@/components/ui/Chip';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 import type { LimitacaoTecnica } from '@/data/protocolos/tipos';
@@ -18,38 +20,44 @@ interface LimitacoesDropdownProps {
 
 export function LimitacoesDropdown({ limitacoes, selecionadas, onToggle }: LimitacoesDropdownProps) {
   const [expanded, setExpanded] = useState(false);
-  const opacity = useSharedValue(0);
+  const progress = useSharedValue(0);
 
   const toggle = () => {
     const next = !expanded;
     setExpanded(next);
-    opacity.value = withTiming(next ? 1 : 0, { duration: 200 });
+    progress.value = withSpring(next ? 1 : 0, { damping: 20, stiffness: 300 });
   };
 
-  const animatedStyle = useAnimatedStyle(() => ({
-    opacity: opacity.value,
+  const chevronStyle = useAnimatedStyle(() => ({
+    transform: [{
+      rotate: `${interpolate(progress.value, [0, 1], [0, 180], Extrapolation.CLAMP)}deg`,
+    }],
+  }));
+
+  const contentStyle = useAnimatedStyle(() => ({
+    opacity: interpolate(progress.value, [0, 0.5, 1], [0, 0, 1], Extrapolation.CLAMP),
+    maxHeight: interpolate(progress.value, [0, 1], [0, 300], Extrapolation.CLAMP),
+    overflow: 'hidden',
   }));
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.header} onPress={toggle} activeOpacity={0.7}>
         <Text style={styles.label}>LIMITAÇÕES TÉCNICAS</Text>
-        {expanded
-          ? <ChevronUp size={14} color={Colors.textMuted} />
-          : <ChevronDown size={14} color={Colors.textMuted} />}
-      </TouchableOpacity>
-      {expanded && (
-        <Animated.View style={[styles.chips, animatedStyle]}>
-          {limitacoes.map((l) => (
-            <Chip
-              key={l.id}
-              label={l.label}
-              selected={selecionadas.includes(l.id)}
-              onPress={() => onToggle(l.id)}
-            />
-          ))}
+        <Animated.View style={chevronStyle}>
+          <ChevronDown size={14} color={Colors.textMuted} />
         </Animated.View>
-      )}
+      </TouchableOpacity>
+      <Animated.View style={[styles.chips, contentStyle]}>
+        {limitacoes.map((l) => (
+          <Chip
+            key={l.id}
+            label={l.label}
+            selected={selecionadas.includes(l.id)}
+            onPress={() => onToggle(l.id)}
+          />
+        ))}
+      </Animated.View>
     </View>
   );
 }
