@@ -11,7 +11,8 @@ import {
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withSpring,
+  withTiming,
+  Easing,
   runOnJS,
 } from 'react-native-reanimated';
 import { Chip } from '@/components/ui/Chip';
@@ -36,7 +37,7 @@ export function JanelaSheet({ janela, selecionados, onToggle, onClose }: JanelaS
   const close = () => {
     if (closing.current) return;
     closing.current = true;
-    translateY.value = withSpring(SHEET_MAX_HEIGHT, { damping: 20, stiffness: 200 }, () => {
+    translateY.value = withTiming(SHEET_MAX_HEIGHT, { duration: 180, easing: Easing.in(Easing.cubic) }, () => {
       runOnJS(onClose)();
     });
   };
@@ -44,7 +45,7 @@ export function JanelaSheet({ janela, selecionados, onToggle, onClose }: JanelaS
   useEffect(() => {
     if (janela) {
       closing.current = false;
-      translateY.value = withSpring(0, { damping: 20, stiffness: 200 });
+      translateY.value = withTiming(0, { duration: 220, easing: Easing.out(Easing.cubic) });
     }
   }, [janela]);
 
@@ -59,7 +60,7 @@ export function JanelaSheet({ janela, selecionados, onToggle, onClose }: JanelaS
       if (gs.dy > SWIPE_THRESHOLD) {
         close();
       } else {
-        translateY.value = withSpring(0, { damping: 20, stiffness: 200 });
+        translateY.value = withTiming(0, { duration: 180, easing: Easing.out(Easing.cubic) });
       }
     },
   });
