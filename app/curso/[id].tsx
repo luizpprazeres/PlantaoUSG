@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import {
-  View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert,
+  View, Text, ScrollView, TouchableOpacity, StyleSheet, Alert, StatusBar,
 } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -8,7 +8,24 @@ import { ArrowLeft, ArrowRight, Check, X } from 'lucide-react-native';
 import { MODULO_MAP } from '@/data/curso';
 import type { Aula, QuestaoAula } from '@/data/curso';
 import { MarkdownText } from '@/components/ui/MarkdownText';
-import { Colors, FontSize, Spacing } from '@/constants/theme';
+import { HtmlRenderer } from '@/components/ui/HtmlRenderer';
+
+// ── PALETA (fundo branco) ──────────────────────────────────────────────────
+const C = {
+  bg: '#FFFFFF',
+  surface: '#F5F5F5',
+  border: '#E0E0E0',
+  text: '#1a1a1a',
+  textSub: '#555555',
+  textMuted: '#888888',
+  correct: '#4CAF50',
+  correctBg: '#F0FBF0',
+  wrong: '#F44336',
+  wrongBg: '#FFF0F0',
+  accent: '#1a1a1a',
+  accentText: '#FFFFFF',
+  progress: '#1a1a1a',
+} as const;
 
 type FaseAula = 'conteudo' | 'quiz' | 'resultado';
 
@@ -29,9 +46,12 @@ function QuizQuestao({
   };
 
   return (
-    <View style={styles.questao}>
-      <Text style={styles.questaoEnunciado}>{questao.enunciado}</Text>
-      <View style={styles.opcoes}>
+    <View style={s.questao}>
+      <View style={s.questaoCard}>
+        <Text style={s.questaoEnunciado}>{questao.enunciado}</Text>
+      </View>
+
+      <View style={s.opcoes}>
         {questao.opcoes.map((opcao, idx) => {
           const correta = respondido && idx === questao.correta;
           const errada = respondido && idx === selecionado && idx !== questao.correta;
@@ -41,28 +61,32 @@ function QuizQuestao({
             <TouchableOpacity
               key={idx}
               style={[
-                styles.opcaoBtn,
-                selecionadaAtual && styles.opcaoBtnSelecionada,
-                correta && styles.opcaoBtnCorreta,
-                errada && styles.opcaoBtnErrada,
+                s.opcaoBtn,
+                selecionadaAtual && s.opcaoBtnSelecionada,
+                correta && s.opcaoBtnCorreta,
+                errada && s.opcaoBtnErrada,
               ]}
               onPress={() => handleSeleção(idx)}
               activeOpacity={respondido ? 1 : 0.7}
             >
-              <Text style={styles.opcaoText}>{opcao}</Text>
-              {respondido && idx === questao.correta && (
-                <Check size={14} color="#4CAF50" />
-              )}
-              {respondido && idx === selecionado && idx !== questao.correta && (
-                <X size={14} color="#F44336" />
-              )}
+              <Text style={[
+                s.opcaoText,
+                correta && s.opcaoTextCorreta,
+                errada && s.opcaoTextErrada,
+              ]}>
+                {opcao}
+              </Text>
+              {correta && <Check size={16} color={C.correct} />}
+              {errada && <X size={16} color={C.wrong} />}
             </TouchableOpacity>
           );
         })}
       </View>
+
       {respondido && (
-        <View style={styles.explicacao}>
-          <Text style={styles.explicacaoText}>{questao.explicacao}</Text>
+        <View style={s.explicacaoBox}>
+          <Text style={s.explicacaoLabel}>EXPLICAÇÃO</Text>
+          <Text style={s.explicacaoText}>{questao.explicacao}</Text>
         </View>
       )}
     </View>
@@ -75,14 +99,14 @@ export default function CursoModuloScreen() {
 
   const [aulaIdx, setAulaIdx] = useState(0);
   const [fase, setFase] = useState<FaseAula>('conteudo');
-  const [acertos, setAcertos] = useState(0);
+  const [acertosTotal, setAcertosTotal] = useState(0);
   const [questaoIdx, setQuestaoIdx] = useState(0);
   const [respostas, setRespostas] = useState<boolean[]>([]);
 
   if (!modulo) {
     return (
-      <SafeAreaView style={styles.safe}>
-        <Text style={{ color: Colors.textPrimary, padding: Spacing.base }}>Módulo não encontrado.</Text>
+      <SafeAreaView style={s.safe}>
+        <Text style={{ color: C.text, padding: 16 }}>Módulo não encontrado.</Text>
       </SafeAreaView>
     );
   }
@@ -90,11 +114,12 @@ export default function CursoModuloScreen() {
   const aula: Aula = modulo.aulas[aulaIdx];
   const totalAulas = modulo.aulas.length;
   const questao = aula.questoes[questaoIdx];
+  const progressoPct = (aulaIdx / totalAulas) * 100;
 
   const handleResponder = (correta: boolean) => {
     const novasRespostas = [...respostas, correta];
     setRespostas(novasRespostas);
-    if (correta) setAcertos((a) => a + 1);
+    if (correta) setAcertosTotal((a) => a + 1);
 
     setTimeout(() => {
       const proxima = questaoIdx + 1;
@@ -103,7 +128,7 @@ export default function CursoModuloScreen() {
       } else {
         setFase('resultado');
       }
-    }, 1200);
+    }, 1400);
   };
 
   const proximaAula = () => {
@@ -113,234 +138,327 @@ export default function CursoModuloScreen() {
       setQuestaoIdx(0);
       setRespostas([]);
     } else {
+      const totalAcertos = acertosTotal;
+      const totalQuestoes = modulo.aulas.reduce((acc, a) => acc + a.questoes.length, 0);
       Alert.alert(
-        'Módulo concluído!',
-        `Você completou o módulo ${modulo.titulo}.\n\nAcertos totais: ${acertos + (respostas.filter(Boolean).length)} questões.`,
+        '✓ Módulo concluído',
+        `${modulo.titulo}\n\n${totalAcertos}/${totalQuestoes} questões corretas\n+${totalAcertos * 10} pontos`,
         [{ text: 'Voltar ao curso', onPress: () => router.back() }]
       );
     }
   };
 
+  const acertosAula = respostas.filter(Boolean).length;
+  const totalQuestoesAula = aula.questoes.length;
+
   return (
-    <SafeAreaView style={styles.safe} edges={['top']}>
+    <SafeAreaView style={s.safe} edges={['top']}>
+      <StatusBar barStyle="dark-content" backgroundColor={C.bg} />
+
       {/* Header */}
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
-          <ArrowLeft size={20} color={Colors.textPrimary} />
+      <View style={s.header}>
+        <TouchableOpacity onPress={() => router.back()} style={s.backBtn}>
+          <ArrowLeft size={20} color={C.text} />
         </TouchableOpacity>
-        <View style={styles.headerCenter}>
-          <Text style={styles.headerModulo}>{modulo.titulo.toUpperCase()}</Text>
-          <Text style={styles.headerAula}>
-            AULA {aulaIdx + 1}/{totalAulas} · {aula.titulo.toUpperCase()}
-          </Text>
+        <View style={s.headerCenter}>
+          <Text style={s.headerModulo}>{modulo.titulo}</Text>
+          <Text style={s.headerAula}>Aula {aulaIdx + 1} de {totalAulas}</Text>
         </View>
-        <View style={{ width: 20 }} />
+        <View style={{ width: 36 }} />
       </View>
 
       {/* Barra de progresso */}
-      <View style={styles.progressBar}>
-        <View style={[styles.progressFill, { width: `${((aulaIdx) / totalAulas) * 100}%` }]} />
+      <View style={s.progressTrack}>
+        <View style={[s.progressFill, { width: `${progressoPct}%` as any }]} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.scroll} showsVerticalScrollIndicator={false}>
-        {/* FASE: CONTEÚDO */}
+      <ScrollView
+        contentContainerStyle={s.scroll}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+
+        {/* ── CONTEÚDO ──────────────────────────────────────────────────── */}
         {fase === 'conteudo' && (
-          <View style={styles.conteudoContainer}>
-            <Text style={styles.aulaTitulo}>{aula.titulo}</Text>
-            <View style={styles.duracao}>
-              <Text style={styles.duracaoText}>~{aula.duracaoMin} min · {aula.questoes.length} questões</Text>
-            </View>
-            <MarkdownText text={aula.conteudo} color={Colors.textSecondary} style={styles.conteudo} />
-            <TouchableOpacity style={styles.btnPrimario} onPress={() => setFase('quiz')} activeOpacity={0.85}>
-              <Text style={styles.btnPrimarioText}>INICIAR QUIZ</Text>
-              <ArrowRight size={16} color={Colors.bgPrimary} />
-            </TouchableOpacity>
-          </View>
-        )}
+          <>
+            <Text style={s.aulaTitulo}>{aula.titulo}</Text>
+            <Text style={s.aulaSubtitulo}>~{aula.duracaoMin} min · {aula.questoes.length} questões</Text>
 
-        {/* FASE: QUIZ */}
-        {fase === 'quiz' && questao && (
-          <View style={styles.quizContainer}>
-            <Text style={styles.quizProgresso}>
-              QUESTÃO {questaoIdx + 1}/{aula.questoes.length}
-            </Text>
-            <QuizQuestao
-              questao={questao}
-              onResponder={handleResponder}
+            <MarkdownText
+              text={aula.conteudo}
+              color={C.text}
+              style={s.conteudo}
             />
-          </View>
+
+            {aula.esquemaHtml && (
+              <View style={s.esquemaContainer}>
+                <Text style={s.esquemaLabel}>ESQUEMA</Text>
+                <HtmlRenderer html={aula.esquemaHtml} />
+              </View>
+            )}
+
+            <TouchableOpacity style={s.btnPrimario} onPress={() => setFase('quiz')} activeOpacity={0.85}>
+              <Text style={s.btnPrimarioText}>INICIAR QUIZ</Text>
+              <ArrowRight size={16} color={C.accentText} />
+            </TouchableOpacity>
+          </>
         )}
 
-        {/* FASE: RESULTADO */}
+        {/* ── QUIZ ──────────────────────────────────────────────────────── */}
+        {fase === 'quiz' && questao && (
+          <>
+            <View style={s.quizHeader}>
+              <Text style={s.quizProgresso}>
+                QUESTÃO {questaoIdx + 1} / {totalQuestoesAula}
+              </Text>
+              <View style={s.quizProgressoBar}>
+                {aula.questoes.map((_, i) => (
+                  <View
+                    key={i}
+                    style={[
+                      s.quizProgressoDot,
+                      i < questaoIdx && s.quizProgressoDotFeito,
+                      i === questaoIdx && s.quizProgressoDotAtual,
+                    ]}
+                  />
+                ))}
+              </View>
+            </View>
+
+            <QuizQuestao questao={questao} onResponder={handleResponder} />
+          </>
+        )}
+
+        {/* ── RESULTADO ─────────────────────────────────────────────────── */}
         {fase === 'resultado' && (
-          <View style={styles.resultadoContainer}>
-            <Text style={styles.resultadoEmoji}>
-              {respostas.filter(Boolean).length === aula.questoes.length ? '🏆' : respostas.filter(Boolean).length >= Math.ceil(aula.questoes.length / 2) ? '✅' : '📖'}
+          <View style={s.resultadoContainer}>
+            <Text style={s.resultadoEmoji}>
+              {acertosAula === totalQuestoesAula ? '🏆' : acertosAula >= Math.ceil(totalQuestoesAula / 2) ? '✓' : '📖'}
             </Text>
-            <Text style={styles.resultadoTitulo}>
-              {respostas.filter(Boolean).length}/{aula.questoes.length} corretas
-            </Text>
-            <Text style={styles.resultadoPontos}>
-              +{respostas.filter(Boolean).length * 10} pontos
-            </Text>
-            <Text style={styles.resultadoMsg}>
-              {respostas.filter(Boolean).length === aula.questoes.length
-                ? 'Perfeito! Todas as questões corretas.'
-                : respostas.filter(Boolean).length >= Math.ceil(aula.questoes.length / 2)
-                ? 'Bom trabalho. Revise os erros e avance.'
-                : 'Revise o conteúdo e tente novamente na próxima sessão.'}
-            </Text>
-            <TouchableOpacity style={styles.btnPrimario} onPress={proximaAula} activeOpacity={0.85}>
-              <Text style={styles.btnPrimarioText}>
+            <Text style={s.resultadoTitulo}>{acertosAula}/{totalQuestoesAula} corretas</Text>
+            <Text style={s.resultadoPontos}>+{acertosAula * 10} pontos</Text>
+
+            <View style={s.resultadoMsgBox}>
+              <Text style={s.resultadoMsg}>
+                {acertosAula === totalQuestoesAula
+                  ? 'Excelente. Todas as questões corretas.'
+                  : acertosAula >= Math.ceil(totalQuestoesAula / 2)
+                  ? 'Bom resultado. Revise as questões erradas antes de avançar.'
+                  : 'Revise o conteúdo desta aula. O material permanece disponível.'}
+              </Text>
+            </View>
+
+            <TouchableOpacity style={s.btnPrimario} onPress={proximaAula} activeOpacity={0.85}>
+              <Text style={s.btnPrimarioText}>
                 {aulaIdx + 1 < totalAulas ? 'PRÓXIMA AULA' : 'CONCLUIR MÓDULO'}
               </Text>
-              <ArrowRight size={16} color={Colors.bgPrimary} />
+              <ArrowRight size={16} color={C.accentText} />
             </TouchableOpacity>
+
+            {aulaIdx + 1 < totalAulas && (
+              <Text style={s.proximaAulaNome}>
+                A seguir: {modulo.aulas[aulaIdx + 1].titulo}
+              </Text>
+            )}
           </View>
         )}
+
       </ScrollView>
     </SafeAreaView>
   );
 }
 
-const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: Colors.bgPrimary },
+const s = StyleSheet.create({
+  safe: { flex: 1, backgroundColor: C.bg },
+
+  // Header
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: Spacing.base,
-    paddingVertical: Spacing.md,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderSubtle,
+    borderBottomColor: C.border,
+    backgroundColor: C.bg,
   },
-  headerCenter: { flex: 1, alignItems: 'center', paddingHorizontal: Spacing.sm },
+  backBtn: {
+    width: 36,
+    height: 36,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  headerCenter: { flex: 1, alignItems: 'center' },
   headerModulo: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.label,
-    color: Colors.textPrimary,
-    letterSpacing: 0.5,
+    fontSize: 13,
+    color: C.text,
+    letterSpacing: 0.3,
   },
   headerAula: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: 9,
-    color: Colors.textMuted,
-    letterSpacing: 1,
+    fontSize: 10,
+    color: C.textMuted,
     marginTop: 2,
   },
-  progressBar: {
-    height: 2,
-    backgroundColor: Colors.bgElevated,
+
+  // Progress
+  progressTrack: { height: 3, backgroundColor: C.border },
+  progressFill: { height: 3, backgroundColor: C.progress },
+
+  // Scroll
+  scroll: {
+    padding: 20,
+    paddingBottom: 48,
   },
-  progressFill: {
-    height: 2,
-    backgroundColor: Colors.textPrimary,
-  },
-  scroll: { padding: Spacing.base, paddingBottom: Spacing.xl },
 
   // Conteúdo
-  conteudoContainer: { gap: Spacing.md },
   aulaTitulo: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.heading,
-    color: Colors.textPrimary,
+    fontSize: 20,
+    color: C.text,
+    lineHeight: 28,
+    marginBottom: 6,
   },
-  duracao: {
-    alignSelf: 'flex-start',
-    borderWidth: 1,
-    borderColor: Colors.borderDefault,
-    paddingHorizontal: Spacing.sm,
-    paddingVertical: 3,
-  },
-  duracaoText: {
+  aulaSubtitulo: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: FontSize.micro,
-    color: Colors.textMuted,
+    fontSize: 11,
+    color: C.textMuted,
     letterSpacing: 0.5,
+    marginBottom: 24,
+    borderBottomWidth: 1,
+    borderBottomColor: C.border,
+    paddingBottom: 16,
   },
-  conteudo: { marginTop: Spacing.xs },
+  conteudo: { marginBottom: 24 },
+  esquemaContainer: {
+    borderWidth: 1,
+    borderColor: C.border,
+    padding: 16,
+    marginBottom: 24,
+    backgroundColor: '#FAFAFA',
+  },
+  esquemaLabel: {
+    fontFamily: 'IBMPlexMono_700Bold',
+    fontSize: 10,
+    color: C.textMuted,
+    letterSpacing: 1.5,
+    marginBottom: 12,
+  },
 
-  // Quiz
-  quizContainer: { gap: Spacing.md },
+  // Quiz header
+  quizHeader: { marginBottom: 24 },
   quizProgresso: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.micro,
-    color: Colors.textMuted,
-    letterSpacing: 2,
+    fontSize: 11,
+    color: C.textMuted,
+    letterSpacing: 1.5,
+    marginBottom: 10,
   },
-  questao: { gap: Spacing.md },
+  quizProgressoBar: { flexDirection: 'row', gap: 6 },
+  quizProgressoDot: {
+    width: 28,
+    height: 4,
+    backgroundColor: C.border,
+    borderRadius: 2,
+  },
+  quizProgressoDotFeito: { backgroundColor: C.correct },
+  quizProgressoDotAtual: { backgroundColor: C.text },
+
+  // Questão
+  questao: { gap: 16 },
+  questaoCard: {
+    backgroundColor: C.surface,
+    padding: 20,
+    borderLeftWidth: 3,
+    borderLeftColor: C.text,
+  },
   questaoEnunciado: {
     fontFamily: 'IBMPlexMono_500Medium',
-    fontSize: FontSize.body,
-    color: Colors.textPrimary,
-    lineHeight: FontSize.body * 1.5,
+    fontSize: 15,
+    color: C.text,
+    lineHeight: 24,
   },
-  opcoes: { gap: Spacing.sm },
+  opcoes: { gap: 10 },
   opcaoBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: Colors.borderDefault,
-    backgroundColor: Colors.bgElevated,
-    padding: Spacing.md,
-    gap: Spacing.sm,
+    borderColor: C.border,
+    backgroundColor: C.bg,
+    padding: 14,
+    gap: 12,
   },
-  opcaoBtnSelecionada: {
-    borderColor: Colors.textPrimary,
-    backgroundColor: '#111',
-  },
-  opcaoBtnCorreta: {
-    borderColor: '#4CAF50',
-    backgroundColor: '#0A1A0A',
-  },
-  opcaoBtnErrada: {
-    borderColor: '#F44336',
-    backgroundColor: '#1A0A0A',
-  },
+  opcaoBtnSelecionada: { borderColor: C.text, backgroundColor: C.surface },
+  opcaoBtnCorreta: { borderColor: C.correct, backgroundColor: C.correctBg },
+  opcaoBtnErrada: { borderColor: C.wrong, backgroundColor: C.wrongBg },
   opcaoText: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: FontSize.caption,
-    color: Colors.textSecondary,
+    fontSize: 13,
+    color: C.textSub,
     flex: 1,
-    lineHeight: FontSize.caption * 1.5,
+    lineHeight: 20,
   },
-  explicacao: {
-    borderLeftWidth: 2,
-    borderLeftColor: Colors.borderDefault,
-    paddingLeft: Spacing.md,
-    marginTop: Spacing.sm,
+  opcaoTextCorreta: { color: C.correct, fontFamily: 'IBMPlexMono_500Medium' },
+  opcaoTextErrada: { color: C.wrong },
+  explicacaoBox: {
+    borderLeftWidth: 3,
+    borderLeftColor: C.border,
+    paddingLeft: 16,
+    paddingVertical: 12,
+    backgroundColor: C.surface,
+    padding: 16,
+  },
+  explicacaoLabel: {
+    fontFamily: 'IBMPlexMono_700Bold',
+    fontSize: 10,
+    color: C.textMuted,
+    letterSpacing: 1.5,
+    marginBottom: 8,
   },
   explicacaoText: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: FontSize.caption,
-    color: Colors.textSecondary,
-    lineHeight: FontSize.caption * 1.7,
+    fontSize: 12,
+    color: C.textSub,
+    lineHeight: 20,
   },
 
   // Resultado
   resultadoContainer: {
     alignItems: 'center',
-    paddingTop: Spacing.xl,
-    gap: Spacing.md,
+    paddingTop: 40,
+    gap: 16,
   },
-  resultadoEmoji: { fontSize: 48 },
+  resultadoEmoji: { fontSize: 52 },
   resultadoTitulo: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.heading,
-    color: Colors.textPrimary,
+    fontSize: 22,
+    color: C.text,
   },
   resultadoPontos: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.body,
-    color: '#4CAF50',
+    fontSize: 14,
+    color: C.correct,
+    letterSpacing: 0.5,
+  },
+  resultadoMsgBox: {
+    backgroundColor: C.surface,
+    padding: 16,
+    width: '100%',
   },
   resultadoMsg: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: FontSize.caption,
-    color: Colors.textSecondary,
+    fontSize: 13,
+    color: C.textSub,
     textAlign: 'center',
-    lineHeight: FontSize.caption * 1.7,
+    lineHeight: 22,
+  },
+  proximaAulaNome: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: 11,
+    color: C.textMuted,
+    textAlign: 'center',
+    marginTop: 4,
   },
 
   // Botão primário
@@ -348,15 +466,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: Colors.textPrimary,
-    padding: Spacing.md,
-    gap: Spacing.sm,
-    marginTop: Spacing.md,
+    backgroundColor: C.accent,
+    padding: 16,
+    gap: 10,
+    marginTop: 8,
+    width: '100%',
   },
   btnPrimarioText: {
     fontFamily: 'IBMPlexMono_700Bold',
-    fontSize: FontSize.label,
-    color: Colors.bgPrimary,
-    letterSpacing: 0.5,
+    fontSize: 13,
+    color: C.accentText,
+    letterSpacing: 1,
   },
 });
