@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { TouchableOpacity, StyleSheet, View } from 'react-native';
+import { TouchableOpacity, StyleSheet, View, Text } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -16,9 +16,10 @@ interface AnimatedLinhaProps {
   total: number;
   onLastComplete?: () => void;
   skipped: boolean;
+  fontSize?: number;
 }
 
-function AnimatedLinha({ texto, index, total, onLastComplete, skipped }: AnimatedLinhaProps) {
+function AnimatedLinha({ texto, index, total, onLastComplete, skipped, fontSize }: AnimatedLinhaProps) {
   const opacity = useSharedValue(skipped ? 1 : 0);
   const translateX = useSharedValue(skipped ? 0 : -8);
 
@@ -46,48 +47,74 @@ function AnimatedLinha({ texto, index, total, onLastComplete, skipped }: Animate
     transform: [{ translateX: translateX.value }],
   }));
 
-  return <Animated.Text style={[styles.text, animStyle]}>{texto}</Animated.Text>;
+  const fs = fontSize ?? 13;
+  return (
+    <Animated.Text
+      style={[styles.text, { fontSize: fs, lineHeight: fs * 1.7, letterSpacing: 0.02 * fs }, animStyle]}
+    >
+      {texto}
+    </Animated.Text>
+  );
 }
 
 interface TypewriterTextProps {
   text: string;
   style?: object;
+  fontSize?: number;
   onComplete?: () => void;
 }
 
-export function TypewriterText({ text, style, onComplete }: TypewriterTextProps) {
+export function TypewriterText({ text, style, fontSize, onComplete }: TypewriterTextProps) {
   const [skipped, setSkipped] = useState(false);
+  const [done, setDone] = useState(false);
   const linhas = text.split('\n').filter(Boolean);
+
+  const handleComplete = () => {
+    setDone(true);
+    onComplete?.();
+  };
 
   const skip = () => {
     setSkipped(true);
+    setDone(true);
     onComplete?.();
   };
 
   return (
-    <TouchableOpacity onPress={!skipped ? skip : undefined} activeOpacity={1}>
-      <View style={style}>
-        {linhas.map((linha, index) => (
-          <AnimatedLinha
-            key={index}
-            texto={linha}
-            index={index}
-            total={linhas.length}
-            onLastComplete={skipped ? undefined : onComplete}
-            skipped={skipped}
-          />
-        ))}
-      </View>
-    </TouchableOpacity>
+    <View style={style}>
+      {linhas.map((linha, index) => (
+        <AnimatedLinha
+          key={index}
+          texto={linha}
+          index={index}
+          total={linhas.length}
+          onLastComplete={skipped ? undefined : handleComplete}
+          skipped={skipped}
+          fontSize={fontSize}
+        />
+      ))}
+      {!done && (
+        <TouchableOpacity onPress={skip} style={styles.skipBtn}>
+          <Text style={styles.skipText}>›› pular</Text>
+        </TouchableOpacity>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   text: {
     fontFamily: 'IBMPlexMono_400Regular',
-    fontSize: FontSize.body,
     color: Colors.textPrimary,
-    lineHeight: FontSize.body * 1.7,
-    letterSpacing: 0.02 * FontSize.body,
+  },
+  skipBtn: {
+    marginTop: 8,
+    alignSelf: 'flex-end',
+  },
+  skipText: {
+    fontFamily: 'IBMPlexMono_400Regular',
+    fontSize: 10,
+    color: Colors.textMuted,
+    letterSpacing: 1,
   },
 });
