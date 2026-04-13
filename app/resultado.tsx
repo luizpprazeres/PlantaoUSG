@@ -21,6 +21,7 @@ import { useLaudadorStore } from '@/stores/laudadorStore';
 import { Analytics } from '@/utils/analytics';
 import { useTextCase } from '@/hooks/useTextCase';
 import { applyTextCase } from '@/utils/textCase';
+import { useTextSize } from '@/hooks/useTextSize';
 
 type Aba = 'extenso' | 'objetivo';
 
@@ -36,6 +37,7 @@ export default function ResultadoScreen() {
   const { achadosSelecionados, observacoes, limitacoesSelecionadas, resetar } =
     useLaudadorStore();
   const { mode: textCaseMode } = useTextCase();
+  const { fontSize } = useTextSize();
 
   const textoRaw = aba === 'extenso' ? (params.extenso ?? '') : (params.objetivo ?? '');
   const texto = applyTextCase(textoRaw, textCaseMode);
@@ -104,9 +106,9 @@ export default function ResultadoScreen() {
 
       <ScrollView style={styles.scroll} contentContainerStyle={styles.scrollContent}>
         {aba === 'extenso' ? (
-          <LaudoExtensoRenderer text={texto} fontSize={13} />
+          <LaudoExtensoRenderer text={texto} fontSize={fontSize} />
         ) : (
-          <TypewriterText key={aba} text={texto} fontSize={13} />
+          <TypewriterText key={aba} text={texto} fontSize={fontSize} />
         )}
         <FunilFooter
           posicao="resultado"

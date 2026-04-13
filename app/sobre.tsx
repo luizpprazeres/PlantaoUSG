@@ -5,6 +5,7 @@ import { ArrowLeft } from 'lucide-react-native';
 import { FunilFooter } from '@/components/ui/FunilFooter';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { useTextCase } from '@/hooks/useTextCase';
+import { useTextSize } from '@/hooks/useTextSize';
 
 const REFERENCIAS = [
   'Volpicelli G. et al. International evidence-based recommendations for point-of-care lung ultrasound. Intensive Care Medicine. 2012',
@@ -16,6 +17,7 @@ const REFERENCIAS = [
 
 export default function SobreScreen() {
   const { mode, toggle } = useTextCase();
+  const { mode: textSizeMode, cycle: cycleTextSize } = useTextSize();
 
   return (
     <SafeAreaView style={styles.safe}>
@@ -35,6 +37,12 @@ export default function SobreScreen() {
         <TouchableOpacity onPress={toggle} style={styles.prefRow}>
           <Text style={styles.prefLabel}>Formato do laudo</Text>
           <Text style={styles.prefValue}>{mode === 'normal' ? 'Aa' : 'AA'}</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={cycleTextSize} style={styles.prefRow}>
+          <Text style={styles.prefLabel}>Tamanho do laudo</Text>
+          <Text style={styles.prefValue}>
+            {textSizeMode === 'sm' ? 'Aa↓' : textSizeMode === 'md' ? 'Aa' : 'Aa↑'}
+          </Text>
         </TouchableOpacity>
 
         <Text style={styles.sectionLabel}>CRIADOR</Text>
