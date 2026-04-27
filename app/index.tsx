@@ -12,6 +12,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { ProtocoloCard } from '@/components/home/ProtocoloCard';
 import { FunilFooter } from '@/components/ui/FunilFooter';
+import { BlinkingCursor } from '@/components/ui/BlinkingCursor';
+import { Scanline } from '@/components/ui/Scanline';
 import { PROTOCOLOS } from '@/data/protocolos';
 import { Colors, FontSize, Spacing } from '@/constants/theme';
 import { Analytics } from '@/utils/analytics';
@@ -86,10 +88,19 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safe}>
       <ScrollView contentContainerStyle={styles.scroll}>
 
-        {/* Header centralizado */}
+        {/* Header — wordmark plantãoUSG_ + cursor estático aceso + scanline sutil
+            Direção Nostromo. Cursor pode ser desativado mudando blinking={false} -> remover componente. */}
         <View style={styles.header}>
-          <Text style={styles.title}>Plantão USG</Text>
+          <View style={styles.titleRow}>
+            <Text style={styles.title}>plantãoUSG</Text>
+            <BlinkingCursor
+              size={FontSize.heading}
+              blinking={false}
+              glyph="_"
+            />
+          </View>
           <Text style={styles.subtitle}>POCUS · LAUDOS · EMERGÊNCIA</Text>
+          <Scanline height={68} />
         </View>
 
         {/* Nav links */}
@@ -166,12 +177,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 1,
     borderBottomColor: '#0F0F0F',
+    overflow: 'hidden', // necessário para a scanline não vazar
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
   },
   title: {
-    fontFamily: 'IBMPlexMono_700Bold',
+    fontFamily: 'IBMPlexMono_500Medium',
     fontSize: FontSize.heading,
     color: Colors.textPrimary,
-    letterSpacing: 1.5,
+    letterSpacing: -0.5,
   },
   subtitle: {
     fontFamily: 'IBMPlexMono_400Regular',

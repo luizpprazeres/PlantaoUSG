@@ -8,6 +8,11 @@ import {
   IBMPlexMono_600SemiBold,
   IBMPlexMono_700Bold,
 } from '@expo-google-fonts/ibm-plex-mono';
+import {
+  IBMPlexSans_400Regular,
+  IBMPlexSans_500Medium,
+  IBMPlexSans_700Bold,
+} from '@expo-google-fonts/ibm-plex-sans';
 import * as SplashScreen from 'expo-splash-screen';
 import { runMigrations } from '@/db';
 import '../global.css';
@@ -20,6 +25,9 @@ export default function RootLayout() {
     IBMPlexMono_500Medium,
     IBMPlexMono_600SemiBold,
     IBMPlexMono_700Bold,
+    IBMPlexSans_400Regular,
+    IBMPlexSans_500Medium,
+    IBMPlexSans_700Bold,
   });
   const [dbReady, setDbReady] = useState(false);
 
