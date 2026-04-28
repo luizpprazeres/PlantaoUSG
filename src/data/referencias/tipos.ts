@@ -16,6 +16,12 @@ export interface Artigo {
   ano: number;
   doi?: string;
   pmid?: string;
+  /** Volume do periódico (ex: "38"). */
+  volume?: string;
+  /** Número/issue dentro do volume (ex: "4"). */
+  numero?: string;
+  /** Faixa de páginas (ex: "577-591"). */
+  paginas?: string;
   categorias: CategoriaArtigo[];
   resumo: string;
   impacto: 'fundamental' | 'importante' | 'complementar';

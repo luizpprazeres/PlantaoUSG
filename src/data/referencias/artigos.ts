@@ -10,6 +10,9 @@ export const ARTIGOS: Artigo[] = [
     ano: 2011,
     doi: '10.1056/NEJMra0909487',
     pmid: '21208112',
+    volume: '364',
+    numero: '8',
+    paginas: '749-757',
     categorias: ['geral'],
     resumo:
       'Revisão seminal sobre POCUS na prática clínica. Define indicações, limitações e competências para uso do ultrassom point-of-care em emergência e cuidados intensivos. Referência fundamental para qualquer praticante de POCUS.',
@@ -39,6 +42,9 @@ export const ARTIGOS: Artigo[] = [
     ano: 2012,
     doi: '10.1007/s00134-012-2513-4',
     pmid: '22392031',
+    volume: '38',
+    numero: '4',
+    paginas: '577-591',
     categorias: ['blue', 'geral', 'diretriz'],
     resumo:
       'Diretriz internacional de consenso sobre USG pulmonar point-of-care. Define os padrões semiológicos (linha A, linha B, consolidação, sinal do pulmão deslizante) e suas interpretações clínicas. Referência obrigatória para o protocolo BLUE.',
@@ -53,6 +59,9 @@ export const ARTIGOS: Artigo[] = [
     ano: 2019,
     doi: '10.1016/j.chest.2018.09.007',
     pmid: '30266626',
+    volume: '156',
+    numero: '1',
+    paginas: '21-25',
     categorias: ['blue'],
     resumo:
       'Correção de erros comuns na interpretação do USG pulmonar por especialistas. Aborda artefatos, limitações técnicas e ciladas diagnósticas. Leitura essencial para evitar sobrediagnóstico.',
@@ -69,6 +78,9 @@ export const ARTIGOS: Artigo[] = [
     ano: 2010,
     doi: '10.1016/j.echo.2010.10.005',
     pmid: '21074967',
+    volume: '23',
+    numero: '12',
+    paginas: '1225-1230',
     categorias: ['cardiac', 'rush', 'diretriz'],
     resumo:
       'Declaração de consenso ACEP/ASE sobre USG cardíaco focado em emergência. Define protocolos, indicações e limitações do ecocardiograma point-of-care. Base para os protocolos FoCUS e RUSH.',
@@ -98,6 +110,9 @@ export const ARTIGOS: Artigo[] = [
     ano: 2016,
     doi: '10.1097/CCM.0000000000001847',
     pmid: '27182849',
+    volume: '44',
+    numero: '6',
+    paginas: '1206-1227',
     categorias: ['cardiac', 'rush', 'diretriz'],
     resumo:
       'Diretriz SCCM para uso do ultrassom à beira do leito em pacientes críticos. Inclui recomendações para avaliação cardíaca, pulmonar, vascular e guia de procedimentos.',

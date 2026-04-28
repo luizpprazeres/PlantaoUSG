@@ -744,9 +744,9 @@ Localização: `src/components/ui/Scanline.tsx`.
 
 ## 20. Página viva
 
-A página `/design-system` (rota Expo Router em `app/design-system.tsx`) é a versão **viva e renderizada** deste documento. Ela permite visualizar e testar todos os elementos descritos aqui, é deployada no Vercel e serve como referência visual canônica.
+A página `/design-system` é a versão **viva e renderizada** deste documento. Trata-se de uma **página web estática** (HTML+CSS puro) servida pela Vercel a partir de `public/design-system/index.html`. Permite visualizar e testar todos os elementos descritos aqui e serve como referência visual canônica.
 
-A página **não está exposta na navegação do app** — é acessível apenas por URL direta no web build.
+A página é **independente do app mobile** — não usa Expo Router web, não compartilha bundle com o app, e não está exposta na navegação. Acessível apenas por URL direta (`/design-system`).
 
 ---
 
