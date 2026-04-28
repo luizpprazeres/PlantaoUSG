@@ -16,6 +16,7 @@
 
 import type { AdapterFn, InputBruto, LaudoGerado } from './tipos';
 import { adaptarBlue } from './adapters/blue';
+import { adaptarEfast } from './adapters/efast';
 
 /**
  * Registro de adapters por sigla normalizada (lowercase).
@@ -23,6 +24,7 @@ import { adaptarBlue } from './adapters/blue';
  */
 const ADAPTERS: Record<string, AdapterFn> = {
   blue: adaptarBlue,
+  efast: adaptarEfast,
 };
 
 function chaveProtocolo(input: InputBruto): string {

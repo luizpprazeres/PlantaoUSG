@@ -19,7 +19,7 @@ const OBJETIVOS_POR_SIGLA: Record<string, string> = {
   BLUE:
     'avaliação pulmonar à beira-leito por POCUS, em busca de sinais de aeração, síndrome intersticial, consolidação, derrame pleural ou pneumotórax',
   EFAST:
-    'pesquisa de líquido livre abdominal e pericárdico no contexto de trauma',
+    'avaliação de líquido livre em cavidades torácica, abdominal e pélvica, com avaliação pleural e pericárdica focada',
   RUSH:
     'avaliação hemodinâmica focada em paciente com choque indiferenciado',
   CARDIAC:
